@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/three"
+    app:startDestination="@id/threeParentFragment">
+
+    <fragment
+        android:id="@+id/threeParentFragment"
+        android:name="com.example.funstuff01.screensThree.ThreeParentFragment"
+        android:label="ThreeParentFragment" >
+        <action
+            android:id="@+id/action_threeParentFragment_to_threeChildFragment"
+            app:destination="@id/threeChildFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/threeChildFragment"
+        android:name="com.example.funstuff01.screensThree.ThreeChildFragment"
+        android:label="ThreeChildFragment" />
+</navigation>

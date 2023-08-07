@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">Fun stuff 01</string>
+
+
+    <string name="one_title">One</string>
+    <string name="two_title">Two</string>
+    <string name="three_title">Three</string>
+
+    <string name="go_to_child_fragment">Go to Child</string>
+    
+    <string name="one_parent_title">Tab One: Parent Fragment</string>
+    <string name="one_child_title">Tab One: Child Fragment</string>
+
+    <string name="two_parent_title">Tab Two: Parent Fragment</string>
+    <string name="two_child_title">Tab Two: Child Fragment</string>
+
+    <string name="three_parent_title">Tab Three: Parent Fragment</string>
+    <string name="three_child_title">Tab Three: Child Fragment</string>
+</resources>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/one"
+        android:icon="@drawable/ic_one_square"
+        android:contentDescription="@string/one_title"
+        android:title="@string/one_title"/>
+
+    <item
+        android:id="@+id/two"
+        android:icon="@drawable/ic_two_square"
+        android:contentDescription="@string/two_title"
+        android:title="@string/two_title"/>
+
+    <item
+        android:id="@+id/three"
+        android:icon="@drawable/ic_three_square"
+        android:contentDescription="@string/three_title"
+        android:title="@string/three_title"/>
+
+</menu>

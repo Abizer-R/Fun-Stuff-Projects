@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/two"
+    app:startDestination="@id/twoParentFragment">
+
+    <fragment
+        android:id="@+id/twoParentFragment"
+        android:name="com.example.funstuff01.screensTwo.TwoParentFragment"
+        android:label="TwoParentFragment" >
+        <action
+            android:id="@+id/action_twoParentFragment_to_twoChildFragment"
+            app:destination="@id/twoChildFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/twoChildFragment"
+        android:name="com.example.funstuff01.screensTwo.TwoChildFragment"
+        android:label="TwoChildFragment" />
+</navigation>
