@@ -17,12 +17,11 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.funstuff01.ui.base.BaseActivity
 import com.example.funstuff01.databinding.ActivityTextToImageBinding
+import com.example.funstuff01.ui.mediaPreview.MediaPreviewActivity
 import com.example.funstuff01.ui.textToImage.adapter.ColorsAdapter
 import com.example.funstuff01.utils.AppUtils
 import com.example.funstuff01.utils.AppUtils.getPathForStorage
 import com.example.funstuff01.utils.TextToImageUtils
-import com.example.funstuff01.utils.hideStatusBar
-import com.example.funstuff01.utils.showStatusBar
 import com.example.funstuff01.utils.toast
 import com.example.funstuff01.utils.views.CustomProgressDialog
 import kotlinx.coroutines.launch
@@ -68,10 +67,9 @@ class TextToImageActivity : BaseActivity<ActivityTextToImageBinding>(ActivityTex
             btnPost.setOnClickListener {
                 saveTextAsImage { imagePath ->
                     Log.e("TESTING2", "outputImage Path = $imagePath", )
-
-                    // TODO open image/video preview screen
-
-
+                    MediaPreviewActivity.startActivity(
+                        this@TextToImageActivity, mediaPath = imagePath, isImage = true
+                    )
                 }
             }
 
@@ -178,15 +176,7 @@ class TextToImageActivity : BaseActivity<ActivityTextToImageBinding>(ActivityTex
     override fun onStartTrackingTouch(p0: SeekBar?) {}
     override fun onStopTrackingTouch(p0: SeekBar?) {}
 
-    override fun onResume() {
-        super.onResume()
-        this.hideStatusBar()
-    }
 
-    override fun onPause() {
-        super.onPause()
-        this.showStatusBar()
-    }
     companion object {
 
         fun startActivity(context: Context) {
