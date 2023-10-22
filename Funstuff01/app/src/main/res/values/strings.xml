@@ -6,8 +6,13 @@
     <string name="two_title">Two</string>
     <string name="three_title">Three</string>
 
-    <string name="go_to_child_fragment">Go to Child</string>
-    
+    <string name="text_to_image">Text To Image</string>
+
+
+
+
+    <string name="go_to_child_fragment">Go to Empty Child Fragment</string>
+
     <string name="one_parent_title">Tab One: Parent Fragment</string>
     <string name="one_child_title">Tab One: Child Fragment</string>
 

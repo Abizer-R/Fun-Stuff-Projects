@@ -1,4 +1,4 @@
-package com.example.funstuff01.base
+package com.example.funstuff01.ui.base
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -27,8 +27,8 @@ abstract class BaseFragment<VB: ViewBinding>(private val inflate: Inflate<VB>) :
     }
 
 
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onDestroyView() {
+        super.onDestroyView()
         _binding = null
     }
 

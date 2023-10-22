@@ -6,7 +6,7 @@
 
     <fragment
         android:id="@+id/twoParentFragment"
-        android:name="com.example.funstuff01.screensTwo.TwoParentFragment"
+        android:name="com.example.funstuff01.ui.navScreens.screensTwo.TwoParentFragment"
         android:label="TwoParentFragment" >
         <action
             android:id="@+id/action_twoParentFragment_to_twoChildFragment"
@@ -14,6 +14,6 @@
     </fragment>
     <fragment
         android:id="@+id/twoChildFragment"
-        android:name="com.example.funstuff01.screensTwo.TwoChildFragment"
+        android:name="com.example.funstuff01.ui.navScreens.screensTwo.TwoChildFragment"
         android:label="TwoChildFragment" />
 </navigation>

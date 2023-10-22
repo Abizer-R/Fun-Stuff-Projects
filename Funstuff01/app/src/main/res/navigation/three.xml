@@ -6,7 +6,7 @@
 
     <fragment
         android:id="@+id/threeParentFragment"
-        android:name="com.example.funstuff01.screensThree.ThreeParentFragment"
+        android:name="com.example.funstuff01.ui.navScreens.screensThree.ThreeParentFragment"
         android:label="ThreeParentFragment" >
         <action
             android:id="@+id/action_threeParentFragment_to_threeChildFragment"
@@ -14,6 +14,6 @@
     </fragment>
     <fragment
         android:id="@+id/threeChildFragment"
-        android:name="com.example.funstuff01.screensThree.ThreeChildFragment"
+        android:name="com.example.funstuff01.ui.navScreens.screensThree.ThreeChildFragment"
         android:label="ThreeChildFragment" />
 </navigation>

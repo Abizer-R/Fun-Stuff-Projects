@@ -6,7 +6,7 @@
 
     <fragment
         android:id="@+id/oneParentFragment"
-        android:name="com.example.funstuff01.screensOne.OneParentFragment"
+        android:name="com.example.funstuff01.ui.navScreens.screensOne.OneParentFragment"
         android:label="OneParentFragment" >
         <action
             android:id="@+id/action_oneParentFragment_to_oneChildFragment"
@@ -14,6 +14,6 @@
     </fragment>
     <fragment
         android:id="@+id/oneChildFragment"
-        android:name="com.example.funstuff01.screensOne.OneChildFragment"
+        android:name="com.example.funstuff01.ui.navScreens.screensOne.OneChildFragment"
         android:label="OneChildFragment" />
 </navigation>
