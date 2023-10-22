@@ -2,4 +2,33 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <color name="backgroundColor">#171717</color>
+    <color name="colorOnBackground">#FFFFFF</color>
+    <color name="dark_panel">#232323</color>
+    <color name="colorAccent">#4DC662</color>
+
+
+    <color name="transparent">#00000000</color>
+    <color name="transparency_20">#85000000</color>
+
+    <color name="tab_color">#171717</color>
+    <color name="progress_dialog_bg">@color/tab_color</color>
+
+
+
+
+    <color name="colors_list_item_1">#0090e7</color>
+    <color name="colors_list_item_2">#07a8b0</color>
+    <color name="colors_list_item_3">#70c04f</color>
+    <color name="colors_list_item_4">#ffd75c</color>
+    <color name="colors_list_item_5">#ffaa00</color>
+    <color name="colors_list_item_6">#ff7101</color>
+    <color name="colors_list_item_7">#cf3000</color>
+    <color name="colors_list_item_8">#a207ba</color>
+    <color name="colors_list_item_9">#ed858e</color>
+    <color name="colors_list_item_10">#ffc382</color>
+    <color name="colors_list_item_11">#99643a</color>
+    <color name="colors_list_item_12">#432324</color>
+    <color name="colors_list_item_13">#1c4928</color>
 </resources>

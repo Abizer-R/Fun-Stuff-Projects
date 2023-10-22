@@ -8,13 +8,27 @@
         android:id="@+id/tvTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
         android:text="@string/one_parent_title"
         android:textSize="16sp"
         android:textStyle="bold"
-        android:layout_marginTop="32dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnTextToImage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/text_to_image"
+        app:icon="@drawable/baseline_format_color_text_24"
+        app:iconTint="@color/white"
+        app:layout_constraintBottom_toTopOf="@+id/btnGotoChild"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_chainStyle="packed"/>
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnGotoChild"
@@ -23,9 +37,11 @@
         android:text="@string/go_to_child_fragment"
         app:icon="@drawable/ic_one_square"
         app:iconTint="@color/white"
+        android:layout_marginTop="@dimen/_16sdp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/btnTextToImage" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

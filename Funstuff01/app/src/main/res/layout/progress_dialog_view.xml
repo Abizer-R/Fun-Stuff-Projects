@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/constraintLayoutParent"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#00000000">
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardViewBackground"
+        android:layout_width="@dimen/_150sdp"
+        android:layout_height="@dimen/_150sdp"
+        app:cardBackgroundColor="@color/progress_dialog_bg"
+        app:cardCornerRadius="@dimen/_16sdp"
+        app:cardElevation="0dp"
+        app:cardMaxElevation="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_45sdp"
+        android:layout_gravity="center"
+        android:layout_marginTop="@dimen/_8sdp"
+        android:layout_marginBottom="@dimen/_8sdp"
+        app:layout_constraintBottom_toBottomOf="@id/cardViewBackground"
+        app:layout_constraintEnd_toEndOf="@id/cardViewBackground"
+        app:layout_constraintStart_toStartOf="@id/cardViewBackground"
+        app:layout_constraintTop_toTopOf="@id/cardViewBackground" />
+
+    <TextView
+        android:id="@+id/textViewProgressDescription"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/_16sdp"
+        android:ellipsize="end"
+        android:gravity="center"
+        android:maxLines="1"
+        android:textColor="@android:color/white"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="@id/cardViewBackground"
+        app:layout_constraintStart_toStartOf="@id/cardViewBackground"
+        app:layout_constraintTop_toBottomOf="@id/progressBar"
+        tools:text="Processing" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
