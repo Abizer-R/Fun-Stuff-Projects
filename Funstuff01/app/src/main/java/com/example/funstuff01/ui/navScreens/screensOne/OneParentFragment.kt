@@ -7,6 +7,7 @@ import com.example.funstuff01.R
 import com.example.funstuff01.ui.base.BaseFragment
 import com.example.funstuff01.databinding.FragmentOneParentBinding
 import com.example.funstuff01.ui.textToImage.TextToImageActivity
+import com.example.funstuff01.utils.file.GeneratePdfUtils
 
 class OneParentFragment : BaseFragment<FragmentOneParentBinding>(
     FragmentOneParentBinding::inflate
@@ -22,7 +23,19 @@ class OneParentFragment : BaseFragment<FragmentOneParentBinding>(
             }
 
             btnTextToImage.setOnClickListener {
-                TextToImageActivity.startActivity(requireContext())
+
+//                val text = "Hello, this is a sample test"
+//                GeneratePdfUtils.generatePdf(requireContext(), text)
+                GeneratePdfUtils.generatePdf3(
+                    requireContext(),
+                    userName = "Abizer Rampurawala",
+                    shareCount = 50,
+                    chatWiseUserId = "abizer_r",
+                    userPhoneNumber = "+919755388971"
+
+                )
+
+//                TextToImageActivity.startActivity(requireContext())
             }
         }
     }
