@@ -10,6 +10,7 @@ import android.view.WindowInsetsController
 import android.view.WindowManager
 import android.widget.Toast
 import androidx.core.view.WindowCompat
+import androidx.fragment.app.Fragment
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -51,4 +52,14 @@ fun Date.toString(format: String, locale: Locale = Locale.getDefault()): String 
 
 fun getCurrentDateTime(): Date {
     return Calendar.getInstance().time
+}
+
+fun Fragment.toast(msg: String) {
+    activity?.toast(msg)
+}
+
+fun Activity.toast(msg: String) {
+    runOnUiThread {
+        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
+    }
 }

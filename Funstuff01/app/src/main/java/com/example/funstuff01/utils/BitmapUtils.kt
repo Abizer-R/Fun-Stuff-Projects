@@ -3,6 +3,7 @@ package com.example.funstuff01.utils
 import android.annotation.SuppressLint
 import android.content.ContentResolver
 import android.graphics.Bitmap
+import android.graphics.Bitmap.CompressFormat
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.util.Log
@@ -26,12 +27,23 @@ object BitmapUtils {
         val newHeight = (newWidth / aspectRatio).toInt()
 
         // Resize the bitmap
-        return Bitmap.createScaledBitmap(bitmap, newWidth, newHeight, true)
+        return Bitmap.createScaledBitmap(bitmap, newWidth, newHeight, false)
     }
 
     fun saveBitmapToFileWebP(bitmap: Bitmap, file: File, quality: Int = 85) {
         FileOutputStream(file).use { outputStream ->
             bitmap.compress(Bitmap.CompressFormat.WEBP, quality, outputStream)
+        }
+    }
+
+    fun saveBitmapToFile(
+        bitmap: Bitmap,
+        file: File,
+        quality: Int = 85,
+        compressFormat: CompressFormat
+    ) {
+        FileOutputStream(file).use { outputStream ->
+            bitmap.compress(compressFormat, quality, outputStream)
         }
     }
 

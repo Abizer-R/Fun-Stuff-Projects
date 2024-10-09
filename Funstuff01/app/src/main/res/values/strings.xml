@@ -21,4 +21,9 @@
 
     <string name="three_parent_title">Tab Three: Parent Fragment</string>
     <string name="three_child_title">Tab Three: Child Fragment</string>
+    <string name="download_complete_notification_channel_id">Download Complete</string>
+    <string name="download_completed">Download Completed</string>
+    <string name="click_to_open">Click To Open</string>
+    <string name="download_successful">Download Successful</string>
+    <string name="download_failed">Download Failed</string>
 </resources>

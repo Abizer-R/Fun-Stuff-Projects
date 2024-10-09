@@ -30,31 +30,35 @@ object FileUtils {
     fun saveFileToAppFolder(
         context: Context,
         file: File,
-        onSuccess: () -> Unit,
+        outputFileName: String? = null,
+        onSuccess: (Uri) -> Unit,
         onFailure: (errorMsg: String?) -> Unit
     ) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            saveFileToAppFolderAndroid(context, file, onSuccess, onFailure)
+            saveFileToAppFolderAndroid(context, file, outputFileName, onSuccess, onFailure)
         } else {
-            saveFileToAppFolderAndroidLegacy(context, file, onSuccess, onFailure)
+            saveFileToAppFolderAndroidLegacy(context, file, outputFileName, onSuccess, onFailure)
         }
     }
 
     @RequiresApi(Build.VERSION_CODES.Q)
-    fun saveFileToAppFolderAndroid(
+    private fun saveFileToAppFolderAndroid(
         context: Context,
         file: File,
-        onSuccess: () -> Unit,
+        outputFileName: String? = null,
+        onSuccess: (Uri) -> Unit,
         onFailure: (errorMsg: String?) -> Unit
     ) {
 
-        val filename = System.currentTimeMillis().toString() + "." + file.extension
+        val filename = if (outputFileName.isNullOrBlank()) {
+            System.currentTimeMillis().toString()
+        } else outputFileName
         val mimeType = getMimeTypeFromFile(file)
         val relativePath = getRelativePathFromMimeTypeNew(context, mimeType)
 
 
         val contentValues = ContentValues().apply {
-            put(MediaStore.MediaColumns.DISPLAY_NAME, filename)
+            put(MediaStore.MediaColumns.DISPLAY_NAME, filename + "." + file.extension)
             put(MediaStore.MediaColumns.MIME_TYPE, mimeType)
             put(MediaStore.MediaColumns.RELATIVE_PATH, relativePath)
         }
@@ -68,22 +72,25 @@ object FileUtils {
         val uri = context.contentResolver.insert(contentUri, contentValues)
         if (uri != null) {
             copyFileToUri(context.contentResolver, file, uri)
-            onSuccess()
+            onSuccess(uri)
         } else {
             onFailure(null)
         }
     }
 
-    fun saveFileToAppFolderAndroidLegacy(
+    private fun saveFileToAppFolderAndroidLegacy(
         context: Context,
         file: File,
-        onSuccess: () -> Unit,
+        outputFileName: String? = null,
+        onSuccess: (Uri) -> Unit,
         onFailure: (errorMsg: String?) -> Unit
     ) {
-        val filename = System.currentTimeMillis().toString() + "." + file.extension
+        val filename = if (outputFileName.isNullOrBlank()) {
+            System.currentTimeMillis().toString()
+        } else outputFileName
         val mimeType = getMimeTypeFromFile(file)
         val relativePath = getRelativePathFromMimeTypeNew(context, mimeType)
-        val externalStorageDir = File(getExternalStorageRootLegacy(), "$relativePath/$filename")
+        val externalStorageDir = File(getExternalStorageRootLegacy(), "$relativePath/$filename" + "." + file.extension)
 
         externalStorageDir.parentFile?.mkdirs()
 
@@ -103,7 +110,7 @@ object FileUtils {
 
         if (uri != null) {
             copyFileToUri(context.contentResolver, file, uri)
-            onSuccess()
+            onSuccess(uri)
         } else {
             onFailure(null)
         }
