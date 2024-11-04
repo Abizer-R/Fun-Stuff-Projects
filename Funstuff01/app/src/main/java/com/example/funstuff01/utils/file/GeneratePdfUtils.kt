@@ -96,10 +96,10 @@ object GeneratePdfUtils {
             paint.isUnderlineText = false
             var yPosition = 150f
             val content = """
-                ChatWise UK Limited in pursuant of its 2024 User Equity Incentive Plan ( the “USOP”) grants the option 
-                holder the option to receive the number of shares of the common stock set forth below ( the “Award”). 
+                ChatWise UK Limited in pursuant of its 2024 User Stock Option Plan (the “USOP”) grants the Optionsholder 
+                the option to receive the number of shares of the common stock set out below ( the “Award”). 
                 This Award is subject to all the terms and conditions set forth in this notice, in the USOP document 
-                and any conditions described on ChatWise website. 
+                and any conditions described on the ChatWise website.
             """.trimIndent()
 
             yPosition = drawMultiLineText(content, canvas, yPosition, paint)
@@ -170,7 +170,7 @@ object GeneratePdfUtils {
             yPosition += lineHeightShareDetails
 
             canvas.drawText("Exercise Price:", labelX, yPosition, paint)
-            canvas.drawText("0", valueX, yPosition, paint)
+            canvas.drawText("Nil", valueX, yPosition, paint)
             yPosition += lineHeightShareDetails
 
             canvas.drawText("Term/Expiration Date:", labelX, yPosition, paint)
@@ -235,10 +235,11 @@ object GeneratePdfUtils {
             yPosition += LINE_HEIGHT_PIXELS * 1.2f
 
             val exerciseContent = """
-                Exercise Price for this option holder is set to zero i.e., no cost will be required 
-                in any currency. OptionHolder will be required to undertake a KYC (Know Your Customer) as per the 
-                rules set by the company's house of the UK. At this stage, Options are linked to the registered 
-                mobile number and an OTP will be required to confirm ownership.
+                Exercise Price for this option holder is set to zero i.e. no cost will be required to pay 
+                by the Optionsholder in any currency to receive shares. Optionsholder will however be required 
+                to undertake a KYC (Know Your Customer) as per the government rules. At this stage, these 
+                Options are linked to the registered mobile number and an OTP will be required to confirm ownership.
+                
             """.trimIndent()
             yPosition = drawMultiLineText(exerciseContent, canvas, yPosition, paint)
 
@@ -247,9 +248,18 @@ object GeneratePdfUtils {
 
             // Signed and dated section
             canvas.drawText("Signed and dated", MARGIN_PIXELS, yPosition, paint)
-            yPosition += LINE_HEIGHT_PIXELS * 2
-            canvas.drawText("ChatWise UK Limited", MARGIN_PIXELS, yPosition, paint)
+            yPosition += LINE_HEIGHT_PIXELS
+            // Load the bitmap (replace R.drawable.ic_logo with your actual drawable resource)
+            val bitmapSign = BitmapFactory.decodeResource(context.resources, R.drawable.josh_sign)
+            // Scale the bitmap to the desired size (optional)
+            val scaledBitmapSign = Bitmap.createScaledBitmap(bitmapSign, bitmapSize * 2, bitmapSize, false)
+            canvas.drawBitmap(scaledBitmapSign, MARGIN_PIXELS, yPosition, paint)
 
+            yPosition += bitmapSize + LINE_HEIGHT_PIXELS
+            canvas.drawText("Gagan Gulati, Chief Executive Officer", MARGIN_PIXELS, yPosition, paint)
+            yPosition += LINE_HEIGHT_PIXELS * 2
+
+            canvas.drawText("ChatWise UK Limited", MARGIN_PIXELS, yPosition, paint)
             pdfDocument.finishPage(page)
 
             try {
