@@ -66,6 +66,8 @@ dependencies {
 
     implementation 'com.intuit.sdp:sdp-android:1.1.0'
     implementation 'com.intuit.ssp:ssp-android:1.1.0'
+
+    implementation 'com.itextpdf:itext7-core:7.2.2'
 }
 
 kapt {

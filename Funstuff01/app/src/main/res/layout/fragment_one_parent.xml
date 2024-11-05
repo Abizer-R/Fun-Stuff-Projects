@@ -16,32 +16,45 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnTextToImage"
-        android:layout_width="wrap_content"
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/text_to_image"
-        app:icon="@drawable/baseline_format_color_text_24"
-        app:iconTint="@color/white"
-        app:layout_constraintBottom_toTopOf="@+id/btnGotoChild"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_chainStyle="packed"/>
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        app:layout_constraintTop_toBottomOf="@+id/tvTitle"
+        app:layout_constraintBottom_toBottomOf="parent">
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnGotoChild"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/go_to_child_fragment"
-        app:icon="@drawable/ic_one_square"
-        app:iconTint="@color/white"
-        android:layout_marginTop="@dimen/_16sdp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnTextToImage" />
 
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnCompressImage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Compress Image" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnGeneratePdf"
+            android:layout_marginVertical="@dimen/_36sdp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Generate PDF" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnTextToImage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/text_to_image"
+            app:icon="@drawable/baseline_format_color_text_24"
+            app:iconTint="@color/white" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnGotoChild"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/go_to_child_fragment"
+            app:icon="@drawable/ic_one_square"
+            app:iconTint="@color/white" />
+
+
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
 </androidx.constraintlayout.widget.ConstraintLayout>
