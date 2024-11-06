@@ -8,16 +8,6 @@
         android:background="@color/transparent"
         android:orientation="vertical">
 
-        <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/fabClose"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="@dimen/_16sdp"
-            android:layout_marginVertical="@dimen/_8sdp"
-            app:srcCompat="@drawable/ic_drag_handler"
-            app:tint="@color/white"
-            app:layout_constraintTop_toTopOf="parent"/>
-
         <androidx.cardview.widget.CardView
             android:id="@+id/cvParent"
             android:layout_width="match_parent"

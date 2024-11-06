@@ -11,9 +11,6 @@ import com.airbnb.lottie.RenderMode
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.example.backgroundaudio.R
-import com.example.backgroundaudio.audioList.bottomsheet.SelectAudioBottomSheet.Companion.UPDATE_LOADING_STATE
-import com.example.backgroundaudio.audioList.bottomsheet.SelectAudioBottomSheet.Companion.UPDATE_PLAY_PAUSE
-import com.example.backgroundaudio.audioList.bottomsheet.SelectAudioBottomSheet.Companion.UPDATE_SELECTED_STATE
 import com.example.backgroundaudio.databinding.AudioListItemBinding
 import com.example.backgroundaudio.databinding.UploadFromStorageListItemBinding
 
@@ -33,6 +30,12 @@ class AudioAdapter(
 
     }
 ) {
+
+    companion object {
+        const val UPDATE_PLAY_PAUSE = "UPDATE_PLAY_PAUSE"
+        const val UPDATE_LOADING_STATE = "UPDATE_LOADING_STATE"
+        const val UPDATE_SELECTED_STATE = "UPDATE_SELECTED_STATE"
+    }
 
     final val AUDIO_TYPE = 1
     final val UPLOAD_STORAGE_TYPE = 2

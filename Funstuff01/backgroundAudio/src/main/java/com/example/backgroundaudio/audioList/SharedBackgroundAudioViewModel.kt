@@ -3,9 +3,11 @@ package com.example.backgroundaudio.audioList
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.backgroundaudio.audioList.adapter.AudioAdapter.Companion.UPDATE_LOADING_STATE
+import com.example.backgroundaudio.audioList.adapter.AudioAdapter.Companion.UPDATE_PLAY_PAUSE
+import com.example.backgroundaudio.audioList.adapter.AudioAdapter.Companion.UPDATE_SELECTED_STATE
 import com.example.backgroundaudio.audioList.adapter.AudioItemModel
 import com.example.backgroundaudio.audioList.adapter.AudioItemType
-import com.example.backgroundaudio.audioList.bottomsheet.SelectAudioBottomSheet
 import com.example.backgroundaudio.utils.AudioListNotifier
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ObsoleteCoroutinesApi
@@ -59,16 +61,10 @@ class SharedBackgroundAudioViewModel
         }
     }
 
-    fun resetItemsUI() {
-        // resetting currentPlaying UI
-        val currPlayingIdx = audioList.indexOfFirst { it.isPlayingCurrently }
-        if (currPlayingIdx != -1) {
-            _audioList[currPlayingIdx].isPlayingCurrently = false
-        }
-        // resetting loading UI
-        val loadingIdx = audioList.indexOfFirst { it.isLoading }
-        if (loadingIdx != -1) {
-            _audioList[loadingIdx].isLoading = false
+    fun resetItems() {
+        audioList.forEach {
+            it.isPlayingCurrently = false
+            it.isLoading = false
         }
         currentPlaying = -1
     }
@@ -107,7 +103,7 @@ class SharedBackgroundAudioViewModel
         _audioList[position].isSelected = isSelected
         _audioListNotifier.send(
             AudioListNotifier.NotifyItemChanged(
-                position, SelectAudioBottomSheet.UPDATE_SELECTED_STATE
+                position, UPDATE_SELECTED_STATE
             )
         )
         _selectedAudioItem = if (isSelected) audioList[selectedAudioItemIndex] else null
@@ -140,7 +136,7 @@ class SharedBackgroundAudioViewModel
         _audioList[position].isPlayingCurrently = isPlaying == true
         _audioListNotifier.send(
             AudioListNotifier.NotifyItemChanged(
-                position, SelectAudioBottomSheet.UPDATE_PLAY_PAUSE
+                position, UPDATE_PLAY_PAUSE
             )
         )
     }
@@ -150,7 +146,7 @@ class SharedBackgroundAudioViewModel
         _audioList[position].isLoading = isLoading
         _audioListNotifier.send(
             AudioListNotifier.NotifyItemChanged(
-                position, SelectAudioBottomSheet.UPDATE_LOADING_STATE
+                position, UPDATE_LOADING_STATE
             )
         )
     }

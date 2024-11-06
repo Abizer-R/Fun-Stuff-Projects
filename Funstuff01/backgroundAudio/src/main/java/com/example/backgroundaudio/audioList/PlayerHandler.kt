@@ -5,13 +5,15 @@ import com.example.backgroundaudio.audioList.adapter.AudioItemModel
 import com.example.backgroundaudio.utils.AudioProcessorUtils
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.Player
+import dagger.hilt.android.qualifiers.ActivityContext
 import dagger.hilt.android.scopes.ActivityScoped
 import javax.inject.Inject
 
 @ActivityScoped
-class PlayerHandler @Inject constructor() {
+class PlayerHandler @Inject constructor(
+    @ActivityContext private val context: Context
+) {
 
-    private var context: Context? = null
     private var player: ExoPlayer? = null
     private var audioItem: AudioItemModel? = null
 
@@ -20,16 +22,14 @@ class PlayerHandler @Inject constructor() {
     val playbackState: Int?
         get() = player?.playbackState
 
-    fun initialize(
-        context: Context,
-        playerListener: Player.Listener? = null
-    ) {
-        this.context = context
-        player = ExoPlayer.Builder(context).build()
-        player?.apply {
+    init {
+        player = ExoPlayer.Builder(context).build().apply {
             repeatMode = Player.REPEAT_MODE_ONE
-            playerListener?.let { addListener(playerListener) }
         }
+    }
+
+    fun addPlayerListener(playerListener: Player.Listener) {
+        player?.addListener(playerListener)
     }
 
     fun initMediaItem(audioItem: AudioItemModel) {
@@ -63,7 +63,6 @@ class PlayerHandler @Inject constructor() {
         player?.stop()
         player?.release()
         player = null
-        context = null
     }
 
 }
