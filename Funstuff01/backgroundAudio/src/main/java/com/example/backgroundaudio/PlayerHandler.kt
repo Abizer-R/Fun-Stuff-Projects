@@ -1,15 +1,16 @@
 package com.example.backgroundaudio
 
 import android.content.Context
+import android.provider.MediaStore.Audio
 import com.example.backgroundaudio.utils.AudioProcessorUtils
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.Player
 
 class PlayerHandler {
 
-    private val audioList = arrayListOf<AudioItemModel>()
     private var context: Context? = null
     private var player: ExoPlayer? = null
+    private var audioItem: AudioItemModel? = null
 
     val isPlaying:  Boolean
         get() = player?.isPlaying == true
@@ -22,17 +23,14 @@ class PlayerHandler {
     ) {
         this.context = context
         player = ExoPlayer.Builder(context).build()
-        playerListener?.let {
-            player?.addListener(playerListener)
+        player?.apply {
+            repeatMode = Player.REPEAT_MODE_ONE
+            playerListener?.let { addListener(playerListener) }
         }
     }
 
-    fun setAudioList(list: List<AudioItemModel>) {
-        this.audioList.clear()
-        this.audioList.addAll(list)
-    }
-
     fun initMediaItem(audioItem: AudioItemModel) {
+        this.audioItem = audioItem
         player?.let { player ->
             player.setMediaItem(AudioProcessorUtils.getMediaItem(audioItem))
             player.prepare()

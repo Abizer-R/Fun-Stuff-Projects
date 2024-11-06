@@ -5,14 +5,11 @@ import android.app.Dialog
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
-import android.content.res.Resources
-import android.graphics.Rect
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.os.bundleOf
 import androidx.fragment.app.activityViewModels
@@ -20,6 +17,7 @@ import androidx.lifecycle.lifecycleScope
 import com.example.backgroundaudio.databinding.SelectAudioBottomSheetBinding
 import com.example.backgroundaudio.utils.AudioListNotifier
 import com.example.backgroundaudio.utils.AudioProcessorUtils
+import com.example.backgroundaudio.utils.toast
 import com.google.android.exoplayer2.PlaybackException
 import com.google.android.exoplayer2.Player
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -35,6 +33,7 @@ class SelectAudioBottomSheet : BottomSheetDialogFragment(),
 
     companion object {
 
+        const val UPDATE_PLAYING_STATE = "UPDATE_PLAYING_STATE"
         const val UPDATE_PLAY_PAUSE = "UPDATE_PLAY_PAUSE"
         const val UPDATE_LOADING_STATE = "UPDATE_LOADING_STATE"
         const val UPDATE_SELECTED_STATE = "UPDATE_SELECTED_STATE"
@@ -64,41 +63,32 @@ class SelectAudioBottomSheet : BottomSheetDialogFragment(),
     private val playerListener = object : Player.Listener {
         override fun onPlaybackStateChanged(playbackState: Int) {
             super.onPlaybackStateChanged(playbackState)
-
-            if(sharedAudioViewModel.currentPlaying == -1) {
-                return
-            }
             when (playbackState) {
                 Player.STATE_BUFFERING -> {
-                    sharedAudioViewModel.updateProgress(isLoading = true)
+                    sharedAudioViewModel.updateLoadingState(true)
                 }
 
                 Player.STATE_IDLE -> {
-                    sharedAudioViewModel.updatePlayPause(isPlaying = false)
-                    sharedAudioViewModel.updateProgress(isLoading = false)
-                    sharedAudioViewModel.currentPlaying = -1
-                    context?.let {
-                        Toast.makeText(it, R.string.something_went_wrong_msg, Toast.LENGTH_SHORT).show()
+                    if (sharedAudioViewModel.currentPlaying != -1) {
+                        sharedAudioViewModel.resetCurrentItemState()
                     }
                 }
 
                 else -> {
-                    sharedAudioViewModel.updatePlayPause(isPlaying = playerHandler?.isPlaying)
-                    sharedAudioViewModel.updateProgress(isLoading = false)
+                    sharedAudioViewModel.updatePlayingState(playerHandler?.isPlaying)
+                    sharedAudioViewModel.updateLoadingState(false)
                 }
             }
         }
 
         override fun onPlayerError(error: PlaybackException) {
             super.onPlayerError(error)
-
-            if(sharedAudioViewModel.currentPlaying < 0 || sharedAudioViewModel.currentPlaying >= sharedAudioViewModel.audioList.size) {
-                return
-            }
-            sharedAudioViewModel.updateProgress(isLoading = false)
+            if (sharedAudioViewModel.currentPlaying != -1) return
+            sharedAudioViewModel.updateLoadingState(false)
             playerHandler?.playCurrent(shouldPrepare = true)
         }
     }
+
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         dialog = super.onCreateDialog(savedInstanceState) as BottomSheetDialog
         return dialog
@@ -144,36 +134,31 @@ class SelectAudioBottomSheet : BottomSheetDialogFragment(),
             }
         }
         audioAdapter.submitList(sharedAudioViewModel.audioList)
-        playerHandler?.setAudioList(sharedAudioViewModel.audioList)
     }
 
     @OptIn(ObsoleteCoroutinesApi::class)
     private fun setObservers() {
-        with (sharedAudioViewModel) {
+        with(sharedAudioViewModel) {
             lifecycleScope.launch {
-                _audioListNotifier.consumeEach {
+                _audioListNotifier.consumeEach { listNotifier ->
                     audioAdapter.submitList(sharedAudioViewModel.audioList)
-                    when (it) {
+                    when (listNotifier) {
                         is AudioListNotifier.NotifyItemChanged -> {
-                            audioAdapter.notifyItemChanged(it.position, it.payload)
+                            audioAdapter.notifyItemChanged(
+                                listNotifier.position,
+                                listNotifier.payload
+                            )
                         }
+
                         is AudioListNotifier.NotifyDataChanged -> {
                             audioAdapter.notifyDataSetChanged()
                         }
+
                         else -> {}
                     }
                 }
             }
         }
-    }
-
-    private fun getDisplayHeight(): Int = Resources.getSystem().displayMetrics.heightPixels
-
-    private fun getStatusBarHeight(): Int {
-        val rectangle = Rect()
-        val window = activity?.window ?: return 0
-        window.decorView.getWindowVisibleDisplayFrame(rectangle)
-        return rectangle.top
     }
 
     private val audioPicker = registerForActivityResult(
@@ -184,11 +169,11 @@ class SelectAudioBottomSheet : BottomSheetDialogFragment(),
 
             val audioUri = intentData.data
             if (audioUri == null) {
-                Toast.makeText(requireContext(), R.string.file_not_found, Toast.LENGTH_SHORT).show()
+                toast(getString(R.string.file_not_found))
                 return@registerForActivityResult
             }
             val contentRes = requireContext().contentResolver
-            val audioName = AudioProcessorUtils.getAudioName(audioUri!!, contentRes)
+            val audioName = AudioProcessorUtils.getAudioName(audioUri, contentRes)
             val audioSizeInBytes = AudioProcessorUtils.getAudioSize(audioUri, contentRes)
             val sizeInMb = audioSizeInBytes.toFloat() / (1000 * 1000)
             val audioDuration = AudioProcessorUtils.getDurationMillis(requireContext(), audioUri)
@@ -205,6 +190,7 @@ class SelectAudioBottomSheet : BottomSheetDialogFragment(),
             addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
             type = "audio/*"
         }
+        sharedAudioViewModel.audioPickerLaunched = true
         audioPicker.launch(audioPickerIntent)
     }
 
@@ -215,20 +201,21 @@ class SelectAudioBottomSheet : BottomSheetDialogFragment(),
         durationInSeconds: Long
     ) {
         if (sizeInMb > 2.0) {
-            Toast.makeText(requireContext(), R.string.audio_size_must_not_be_more_than_2_mb, Toast.LENGTH_SHORT).show()
+            toast(getString(R.string.audio_size_must_not_be_more_than_2_mb))
             return
         }
         if (durationInSeconds > 120) {
-            Toast.makeText(requireContext(), R.string.audio_duration_must_not_be_more_than_2_minutes, Toast.LENGTH_SHORT).show()
+            toast(getString(R.string.audio_duration_must_not_be_more_than_2_minutes))
             return
         }
 
-        val dialogBuilder = MaterialAlertDialogBuilder(requireContext(), R.style.AlertDialogTheme).apply {
-            setIcon(R.drawable.ic_music_card)
-            setTitle(name)
-            setMessage(getString(R.string.select_audio_as_background))
-            setCancelable(true)
-        }
+        val dialogBuilder =
+            MaterialAlertDialogBuilder(requireContext(), R.style.AlertDialogTheme).apply {
+                setIcon(R.drawable.ic_music_card)
+                setTitle(name)
+                setMessage(getString(R.string.select_audio_as_background))
+                setCancelable(true)
+            }
 
         dialogBuilder.setPositiveButton(getString(R.string.yes)) { dialogInterface, _ ->
             sharedAudioViewModel.updateAudioFromStorage(name, uri)
@@ -243,31 +230,23 @@ class SelectAudioBottomSheet : BottomSheetDialogFragment(),
     }
 
     override fun onPlayPauseClicked(position: Int, audioItem: AudioItemModel) {
-        if(sharedAudioViewModel.currentPlaying == position) {
-            if(playerHandler?.playbackState == Player.STATE_BUFFERING) {
-                return
-            }
-            if(playerHandler?.isPlaying == true) {
-                pauseAt(position)
-            } else {
-                playAt(position)
-            }
-
-        } else {
-            if(playerHandler?.playbackState == Player.STATE_BUFFERING) {
-                sharedAudioViewModel.updatePlayPause(isPlaying = false)
-                sharedAudioViewModel.updateProgress(isLoading = false)
-                // need to make "currentSelected" -1
-                // otherwise, the playerListener will show a misguiding toast when playbackState will be STATE_IDLE
-                sharedAudioViewModel.currentPlaying = -1
-                playerHandler?.stop()
-
-            } else if (playerHandler?.isPlaying == true) {
-                sharedAudioViewModel.updatePlayPause(isPlaying = false)
-            }
-            sharedAudioViewModel.currentPlaying = position
-            playerHandler?.initMediaItem(audioItem)
+        if (sharedAudioViewModel.currentPlaying == position) {
+            if (playerHandler?.playbackState == Player.STATE_BUFFERING) return
+            if (playerHandler?.isPlaying == true) pauseAt(position)
+            else playAt(position)
+            return
         }
+
+        // clicked item is different than current playing item
+        if (playerHandler?.playbackState == Player.STATE_BUFFERING) {
+            sharedAudioViewModel.resetCurrentItemState()
+            playerHandler?.stop()
+
+        } else if (playerHandler?.isPlaying == true) {
+            sharedAudioViewModel.updatePlayingState(false)
+        }
+        sharedAudioViewModel.currentPlaying = position
+        playerHandler?.initMediaItem(audioItem)
     }
 
     override fun onAudioItemClicked(position: Int, audioItem: AudioItemModel) {
@@ -298,7 +277,7 @@ class SelectAudioBottomSheet : BottomSheetDialogFragment(),
             return
         }
         playerHandler?.pause()
-        sharedAudioViewModel.updatePlayPause(position, false)
+        sharedAudioViewModel.updatePlayingState(false, position)
     }
 
     private fun playAt(position: Int) {
@@ -306,7 +285,7 @@ class SelectAudioBottomSheet : BottomSheetDialogFragment(),
             return
         }
         playerHandler?.playbackState
-        sharedAudioViewModel.updatePlayPause(position, true)
+        sharedAudioViewModel.updatePlayingState(true, position)
         sharedAudioViewModel.currentPlaying = position
     }
 
@@ -338,9 +317,8 @@ class SelectAudioBottomSheet : BottomSheetDialogFragment(),
     override fun onDetach() {
         super.onDetach()
 
+        sharedAudioViewModel.resetCurrentItemState()
         listener = null
-        sharedAudioViewModel.updatePlayPause(isPlaying = false)
-        sharedAudioViewModel.updateProgress(isLoading = false)
     }
 
     override fun onPause() {
@@ -353,10 +331,11 @@ class SelectAudioBottomSheet : BottomSheetDialogFragment(),
 
     override fun onResume() {
         super.onResume()
-        if (sharedAudioViewModel.shouldPlayOnResume) {
+        if (sharedAudioViewModel.shouldPlayOnResume && sharedAudioViewModel.audioPickerLaunched.not()) {
             playAt(sharedAudioViewModel.currentPlaying)
-            sharedAudioViewModel.shouldPlayOnResume = false
         }
+        sharedAudioViewModel.shouldPlayOnResume = false
+        sharedAudioViewModel.audioPickerLaunched = false
     }
 
     override fun onDismiss(dialog: DialogInterface) {

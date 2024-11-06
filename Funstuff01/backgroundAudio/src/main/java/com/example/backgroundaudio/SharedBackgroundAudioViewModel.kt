@@ -1,9 +1,6 @@
 package com.example.backgroundaudio
 
 import android.net.Uri
-import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.backgroundaudio.utils.AudioListNotifier
@@ -25,6 +22,7 @@ class SharedBackgroundAudioViewModel
 
     val _audioListNotifier = BroadcastChannel<AudioListNotifier>(Channel.BUFFERED)
     var currentPlaying: Int = -1
+    var audioPickerLaunched: Boolean = false
     var shouldPlayOnResume: Boolean = false
 
     var selectedAudioItemIndex: Int = -1
@@ -127,10 +125,15 @@ class SharedBackgroundAudioViewModel
         )
     }
 
-    fun updatePlayPause(position: Int = currentPlaying, isPlaying: Boolean?) = viewModelScope.launch {
-        if (position < 0 || position >= audioList.size) {
-            return@launch
-        }
+    fun resetCurrentItemState() = viewModelScope.launch {
+        updatePlayingState(false)
+        updateLoadingState(false)
+        // need to make "currentSelected" -1, to avoid playerListener calling this method again due to playbackState becoming STATE_IDLE
+        currentPlaying = -1
+    }
+
+    fun updatePlayingState(isPlaying: Boolean?, position: Int = currentPlaying) = viewModelScope.launch {
+        if (position !in 0..audioList.lastIndex) return@launch
         _audioList[position].isPlayingCurrently = isPlaying == true
         _audioListNotifier.send(
             AudioListNotifier.NotifyItemChanged(
@@ -139,10 +142,8 @@ class SharedBackgroundAudioViewModel
         )
     }
 
-    fun updateProgress(position: Int = currentPlaying, isLoading: Boolean) = viewModelScope.launch {
-        if (position < 0 || position >= audioList.size) {
-            return@launch
-        }
+    fun updateLoadingState(isLoading: Boolean, position: Int = currentPlaying) = viewModelScope.launch {
+        if (position !in 0..audioList.lastIndex) return@launch
         _audioList[position].isLoading = isLoading
         _audioListNotifier.send(
             AudioListNotifier.NotifyItemChanged(

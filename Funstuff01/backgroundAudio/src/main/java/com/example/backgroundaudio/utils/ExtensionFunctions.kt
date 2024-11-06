@@ -1,9 +1,12 @@
 package com.example.backgroundaudio.utils
 
+import android.content.Context
 import android.content.Intent
 import android.os.Build.VERSION.SDK_INT
 import android.os.Bundle
 import android.os.Parcelable
+import android.widget.Toast
+import androidx.fragment.app.Fragment
 
 inline fun <reified T : Parcelable> Bundle.parcelableArrayList(key: String): ArrayList<T>? = when {
     SDK_INT >= 33 -> getParcelableArrayList(key, T::class.java)
@@ -13,4 +16,12 @@ inline fun <reified T : Parcelable> Bundle.parcelableArrayList(key: String): Arr
 inline fun <reified T : Parcelable> Intent.parcelableArrayList(key: String): ArrayList<T>? = when {
     SDK_INT >= 33 -> getParcelableArrayListExtra(key, T::class.java)
     else -> @Suppress("DEPRECATION") getParcelableArrayListExtra(key)
+}
+
+fun Fragment.toast(message: String) = activity?.runOnUiThread{
+    context?.toast(message)
+}
+
+fun Context.toast(message: String) {
+    Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
 }
