@@ -6,7 +6,9 @@ import androidx.navigation.fragment.findNavController
 import com.example.funstuff01.R
 import com.example.funstuff01.ui.base.BaseFragment
 import com.example.funstuff01.databinding.FragmentThreeParentBinding
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class ThreeParentFragment : BaseFragment<FragmentThreeParentBinding>(
     FragmentThreeParentBinding::inflate
 ) {

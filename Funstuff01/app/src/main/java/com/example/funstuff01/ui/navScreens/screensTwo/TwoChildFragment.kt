@@ -4,7 +4,9 @@ package com.example.funstuff01.ui.navScreens.screensTwo
 import android.view.View
 import com.example.funstuff01.ui.base.BaseFragment
 import com.example.funstuff01.databinding.FragmentTwoChildBinding
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class TwoChildFragment : BaseFragment<FragmentTwoChildBinding>(
     FragmentTwoChildBinding::inflate
 ) {

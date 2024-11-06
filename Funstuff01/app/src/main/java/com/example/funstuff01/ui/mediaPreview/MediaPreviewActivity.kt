@@ -17,8 +17,10 @@ import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.PlaybackException
 import com.google.android.exoplayer2.Player
+import dagger.hilt.android.AndroidEntryPoint
 import java.io.File
 
+@AndroidEntryPoint
 class MediaPreviewActivity : BaseActivity<ActivityMediaPreviewBinding>(ActivityMediaPreviewBinding::inflate) {
 
     private var mediaPath: String? = null

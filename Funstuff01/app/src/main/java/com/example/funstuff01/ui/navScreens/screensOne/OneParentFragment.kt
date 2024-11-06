@@ -17,8 +17,10 @@ import com.example.funstuff01.utils.file.FileUtils
 import com.example.funstuff01.utils.file.GeneratePdfUtils
 import com.example.funstuff01.utils.file.saveMediaToFile
 import com.example.funstuff01.utils.toast
+import dagger.hilt.android.AndroidEntryPoint
 import java.io.File
 
+@AndroidEntryPoint
 class OneParentFragment : BaseFragment<FragmentOneParentBinding>(
     FragmentOneParentBinding::inflate
 ) {

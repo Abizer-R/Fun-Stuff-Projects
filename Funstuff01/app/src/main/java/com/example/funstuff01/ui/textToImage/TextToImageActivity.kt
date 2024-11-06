@@ -35,10 +35,12 @@ import com.example.funstuff01.utils.file.saveMediaToFile
 import com.example.funstuff01.utils.setOnSingleClickListener
 import com.example.funstuff01.utils.toast
 import com.example.funstuff01.utils.views.CustomProgressDialog
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+@AndroidEntryPoint
 class TextToImageActivity : BaseActivity<ActivityTextToImageBinding>(ActivityTextToImageBinding::inflate),
         ColorsAdapter.ColorsClickListener, SeekBar.OnSeekBarChangeListener,
     SelectAudioBottomSheet.SelectAudioBSListener
