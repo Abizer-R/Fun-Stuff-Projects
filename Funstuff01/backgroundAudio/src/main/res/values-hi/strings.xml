@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+
+    <string name="yes">"हाँ"</string>
+    <string name="no">"नहीं"</string>
+    <string name="something_went_wrong_msg">"कुछ गलत हो गया"</string>
+    <string name="add_audio_as_background">इसे बैकग्राउंड ऑडियो की तरह चुनें ?</string>
+    <string name="select_audio_as_background">इसे बैकग्राउंड ऑडियो की तरह चुनें ?</string>
+    <string name="select_audio">"ऑडियो चुनें"</string>
+    <string name="upload_from_device">डिवाइस से अपलोड करें</string>
+    <string name="your_audio">आपका ऑडियो</string>
+    <string name="audio_size_must_not_be_more_than_2_mb">ऑडियो का साइज 2 MB से अधिक नहीं होना चाहिए</string>
+    <string name="audio_duration_must_not_be_more_than_2_minutes">ऑडियो की अवधि 2 मिनट से अधिक नहीं होनी चाहिए</string>
+</resources>

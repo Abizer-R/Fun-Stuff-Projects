@@ -1,0 +1,14 @@
+<resources>
+
+    <string name="select_audio">"Select Audio"</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="add_audio_as_background">Add this as background Audio?</string>
+    <string name="select_audio_as_background">Select this as background Audio?</string>
+    <string name="something_went_wrong_msg">Something went wrong</string>
+    <string name="upload_from_device">upload from device</string>
+    <string name="your_audio">your audio</string>
+    <string name="audio_size_must_not_be_more_than_2_mb">Audio size must not be more than 2 MB</string>
+    <string name="audio_duration_must_not_be_more_than_2_minutes">Audio duration must not be more than 2 minutes</string>
+    <string name="file_not_found">File not found</string>
+</resources>

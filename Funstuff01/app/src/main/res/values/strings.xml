@@ -26,4 +26,10 @@
     <string name="click_to_open">Click To Open</string>
     <string name="download_successful">Download Successful</string>
     <string name="download_failed">Download Failed</string>
+    <string name="please_write_something">Please Write Something</string>
+    <string name="check_internet_message">Check Your Internet</string>
+    <string name="something_went_wrong">Something Went Wrong</string>
+    <string name="failed_to_play_video">Failed to play video</string>
+    <string name="media_path_is_null_or_blank">Media path is null or blank</string>
+    <string name="file_not_found">File not found</string>
 </resources>

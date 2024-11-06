@@ -16,18 +16,20 @@ import com.example.funstuff01.utils.AppUtils
 
 class CustomProgressDialog constructor(val backgroundColor: Int = R.color.progress_dialog_bg) {
 
-    lateinit var dialog: CustomDialog
+    var dialog: CustomDialog? = null
 
 
-    fun show(activity: Activity, title: CharSequence?): Dialog {
+    fun show(activity: Activity, title: CharSequence?): Dialog? {
+        if (dialog != null) {   // do not create new dialog instance everytime
+            dialog?.show()
+            return dialog
+        }
+
         val viewBinding = ProgressDialogViewBinding.inflate(activity.layoutInflater)
         viewBinding.textViewProgressDescription.apply {
             title?.let { text = it }
             setTextColor(Color.WHITE)
         }
-        viewBinding.cardViewBackground.setCardBackgroundColor(
-            (ContextCompat.getColor(activity, backgroundColor))
-        )
         setColorFilter(
             viewBinding.progressBar.indeterminateDrawable,
             ResourcesCompat.getColor(activity.resources, R.color.colorAccent, null)
@@ -35,8 +37,8 @@ class CustomProgressDialog constructor(val backgroundColor: Int = R.color.progre
 
 
         dialog = CustomDialog(activity)
-        dialog.setContentView(viewBinding.root)
-        dialog.show()
+        dialog?.setContentView(viewBinding.root)
+        dialog?.show()
 
         return dialog
     }

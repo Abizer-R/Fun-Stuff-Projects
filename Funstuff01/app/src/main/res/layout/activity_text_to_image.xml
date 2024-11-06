@@ -88,6 +88,64 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
 
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cvAddMusic"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:backgroundTint="@color/transparent"
+                app:layout_constraintBottom_toBottomOf="@+id/btnPost"
+                app:layout_constraintEnd_toStartOf="@+id/btnPost"
+                app:layout_constraintTop_toTopOf="@+id/btnPost"
+                app:layout_constraintDimensionRatio="1:1"
+                android:layout_marginEnd="@dimen/_8sdp">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" >
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@color/dark_panel"
+                        android:alpha="0.95"/>
+
+
+                    <androidx.appcompat.widget.AppCompatImageView
+                        android:id="@+id/musicIcon"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        app:srcCompat="@drawable/ic_musical_note"
+                        app:tint="@color/colorAccent"
+                        android:padding="@dimen/_10sdp"
+                        android:layout_marginEnd="@dimen/_2sdp"/>
+
+
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:id="@+id/ivAudioSelected"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        app:srcCompat="@drawable/ic_done"
+                        android:visibility="gone"
+                        app:tint="@color/colorAccent"
+                        app:layout_constraintDimensionRatio="1:1"
+                        android:background="@color/dark_panel"
+                        app:shapeAppearance="@style/RoundedImageViewShape"
+                        app:layout_constraintTop_toTopOf="@id/musicIcon"
+                        app:layout_constraintEnd_toEndOf="@id/musicIcon"
+                        app:layout_constraintStart_toStartOf="@id/guidelineHalf" />
+
+                    <androidx.constraintlayout.widget.Guideline
+                        android:id="@+id/guidelineHalf"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical"
+                        app:layout_constraintGuide_percent="0.5" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnPost"
                 android:layout_width="wrap_content"

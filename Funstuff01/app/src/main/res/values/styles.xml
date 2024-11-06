@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <style name="CustomDialogTheme">
         <item name="android:windowBackground">@android:color/transparent</item>
     </style>
+
+    <style name="RoundedImageViewShape">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
+        <item name="android:forceDarkAllowed" tools:targetApi="q">false</item>
+    </style>
+
 </resources>

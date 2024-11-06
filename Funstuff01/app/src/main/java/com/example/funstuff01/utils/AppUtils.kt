@@ -10,7 +10,10 @@ import android.view.View
 import android.view.WindowInsets
 import android.view.WindowInsetsController
 import androidx.core.content.ContextCompat
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.io.File
+import java.net.URL
 
 object AppUtils {
 
@@ -78,5 +81,26 @@ object AppUtils {
         ).path
     }
 
-
+    suspend fun downloadFile(
+        url: String,
+        path: String,
+        onComplete: () -> Unit,
+        onFailed: () -> Unit
+    ) {
+        withContext(Dispatchers.IO) {
+            var isSuccessful = true
+            try {
+                URL(url).openStream().use { input ->
+                    File(path).outputStream().use { output ->
+                        input.copyTo(output)
+                    }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                isSuccessful = false
+            }
+            if (isSuccessful) onComplete()
+            else onFailed()
+        }
+    }
 }

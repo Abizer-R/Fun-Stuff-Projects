@@ -1,0 +1,36 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <style name="RoundedShape">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
+        <item name="android:forceDarkAllowed" tools:targetApi="q">false</item>
+    </style>
+
+    <style name="topRoundedCornerShape24dp">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSizeTopLeft">@dimen/_24sdp</item>
+        <item name="cornerSizeTopRight">@dimen/_24sdp</item>
+    </style>
+
+    <style name="AlertDialogTheme" parent="@style/Theme.Material3.Dark.Dialog.Alert">
+        <item name="colorControlNormal">@color/message_text_color</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:background">@drawable/bg_curved_dark</item>
+        <item name="textColorAlertDialogListItem">@color/white</item>
+        <item name="android:windowBackground">@drawable/bg_curved_dark</item>
+        <item name="buttonBarNegativeButtonStyle">@style/PositiveNegativeButtons</item>
+        <item name="buttonBarPositiveButtonStyle">@style/PositiveNegativeButtons</item>
+        <item name="buttonBarNeutralButtonStyle">@style/PositiveNegativeButtons</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textColorPrimary">@color/white</item>
+    </style>
+
+    <style name="PositiveNegativeButtons" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
+        <item name="android:textColor">@color/colorAccent</item>
+        <item name="android:textSize">@dimen/_2sdp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+</resources>

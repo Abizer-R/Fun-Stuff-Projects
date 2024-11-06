@@ -63,3 +63,9 @@ fun Activity.toast(msg: String) {
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
     }
 }
+
+/**
+ * Extension function to handle click listener for
+ * a view of type kotlin Lambda click listener
+ */
+fun View.setOnSingleClickListener(l: (View) -> Unit) = setOnClickListener(OnSingleClickListener(l))

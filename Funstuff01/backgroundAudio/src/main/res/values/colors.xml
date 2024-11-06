@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#242424</color>
+    <color name="colorPrimaryDark">#242424</color>
+    <color name="colorAccent">#4DC662</color>
+    <color name="color_selected">#57735d</color>
+
+    <color name="backgroundColor">#171717</color>
+    <color name="colorOnBackground">#FFFFFF</color>
+
+    <color name="black">#000000</color>
+    <color name="white">#FFFFFF</color>
+
+    <color name="dark_panel">#232323</color>
+    <color name="message_text_color">#696969</color>
+    <color name="transparent">#00000000</color>
+
+</resources>
