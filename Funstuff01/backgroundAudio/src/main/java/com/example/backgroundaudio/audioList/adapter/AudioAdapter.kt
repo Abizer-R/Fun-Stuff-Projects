@@ -1,4 +1,4 @@
-package com.example.backgroundaudio
+package com.example.backgroundaudio.audioList.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -10,9 +10,10 @@ import com.airbnb.lottie.LottieDrawable
 import com.airbnb.lottie.RenderMode
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.example.backgroundaudio.SelectAudioBottomSheet.Companion.UPDATE_LOADING_STATE
-import com.example.backgroundaudio.SelectAudioBottomSheet.Companion.UPDATE_PLAY_PAUSE
-import com.example.backgroundaudio.SelectAudioBottomSheet.Companion.UPDATE_SELECTED_STATE
+import com.example.backgroundaudio.R
+import com.example.backgroundaudio.audioList.bottomsheet.SelectAudioBottomSheet.Companion.UPDATE_LOADING_STATE
+import com.example.backgroundaudio.audioList.bottomsheet.SelectAudioBottomSheet.Companion.UPDATE_PLAY_PAUSE
+import com.example.backgroundaudio.audioList.bottomsheet.SelectAudioBottomSheet.Companion.UPDATE_SELECTED_STATE
 import com.example.backgroundaudio.databinding.AudioListItemBinding
 import com.example.backgroundaudio.databinding.UploadFromStorageListItemBinding
 

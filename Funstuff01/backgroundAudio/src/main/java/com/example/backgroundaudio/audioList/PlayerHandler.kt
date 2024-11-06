@@ -1,7 +1,7 @@
-package com.example.backgroundaudio
+package com.example.backgroundaudio.audioList
 
 import android.content.Context
-import android.provider.MediaStore.Audio
+import com.example.backgroundaudio.audioList.adapter.AudioItemModel
 import com.example.backgroundaudio.utils.AudioProcessorUtils
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.Player

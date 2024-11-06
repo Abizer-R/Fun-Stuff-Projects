@@ -1,6 +1,6 @@
 package com.example.backgroundaudio.utils
 
-import com.example.backgroundaudio.AudioItemModel
+import com.example.backgroundaudio.audioList.adapter.AudioItemModel
 
 object DummyAudioList {
     const val imageEndPoint = "https://media-prod.jigrr.com/images/crop/"

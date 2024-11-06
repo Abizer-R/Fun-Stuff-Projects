@@ -1,4 +1,4 @@
-package com.example.backgroundaudio
+package com.example.backgroundaudio.audioList.adapter
 
 import android.net.Uri
 import android.os.Parcelable

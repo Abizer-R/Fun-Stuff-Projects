@@ -1,6 +1,5 @@
 package com.example.backgroundaudio.utils
 
-import android.app.Activity
 import android.content.ContentResolver
 import android.content.Context
 import android.database.Cursor
@@ -10,8 +9,8 @@ import android.net.Uri
 import android.provider.OpenableColumns
 import com.arthenica.ffmpegkit.FFmpegKit
 import com.arthenica.ffmpegkit.ReturnCode
-import com.example.backgroundaudio.AudioItemModel
-import com.example.backgroundaudio.AudioItemType
+import com.example.backgroundaudio.audioList.adapter.AudioItemModel
+import com.example.backgroundaudio.audioList.adapter.AudioItemType
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.MediaMetadata
 import kotlinx.coroutines.Dispatchers

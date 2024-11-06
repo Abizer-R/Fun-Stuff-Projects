@@ -17,10 +17,10 @@ import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.backgroundaudio.AudioItemModel
-import com.example.backgroundaudio.AudioItemType
-import com.example.backgroundaudio.SelectAudioBottomSheet
-import com.example.backgroundaudio.SharedBackgroundAudioViewModel
+import com.example.backgroundaudio.audioList.adapter.AudioItemModel
+import com.example.backgroundaudio.audioList.adapter.AudioItemType
+import com.example.backgroundaudio.audioList.bottomsheet.SelectAudioBottomSheet
+import com.example.backgroundaudio.audioList.SharedBackgroundAudioViewModel
 import com.example.backgroundaudio.utils.DummyAudioList
 import com.example.backgroundaudio.utils.AudioProcessorUtils
 import com.example.funstuff01.R
