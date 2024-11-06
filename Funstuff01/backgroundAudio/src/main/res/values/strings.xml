@@ -11,4 +11,5 @@
     <string name="audio_size_must_not_be_more_than_2_mb">Audio size must not be more than 2 MB</string>
     <string name="audio_duration_must_not_be_more_than_2_minutes">Audio duration must not be more than 2 minutes</string>
     <string name="file_not_found">File not found</string>
+    <string name="error_while_playing">Error while playing</string>
 </resources>

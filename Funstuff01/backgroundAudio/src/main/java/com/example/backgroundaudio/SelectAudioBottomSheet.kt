@@ -83,9 +83,8 @@ class SelectAudioBottomSheet : BottomSheetDialogFragment(),
 
         override fun onPlayerError(error: PlaybackException) {
             super.onPlayerError(error)
-            if (sharedAudioViewModel.currentPlaying != -1) return
-            sharedAudioViewModel.updateLoadingState(false)
-            playerHandler?.playCurrent(shouldPrepare = true)
+            sharedAudioViewModel.resetItemsUI()
+            toast(getString(R.string.error_while_playing))
         }
     }
 
@@ -238,13 +237,10 @@ class SelectAudioBottomSheet : BottomSheetDialogFragment(),
         }
 
         // clicked item is different than current playing item
-        if (playerHandler?.playbackState == Player.STATE_BUFFERING) {
-            sharedAudioViewModel.resetCurrentItemState()
-            playerHandler?.stop()
-
-        } else if (playerHandler?.isPlaying == true) {
-            sharedAudioViewModel.updatePlayingState(false)
-        }
+        // stop the prev item
+        sharedAudioViewModel.resetCurrentItemState()
+        playerHandler?.stop()
+        // set the new item
         sharedAudioViewModel.currentPlaying = position
         playerHandler?.initMediaItem(audioItem)
     }
@@ -284,7 +280,6 @@ class SelectAudioBottomSheet : BottomSheetDialogFragment(),
         if (position < 0 || position >= sharedAudioViewModel.audioList.size) {
             return
         }
-        playerHandler?.playbackState
         sharedAudioViewModel.updatePlayingState(true, position)
         sharedAudioViewModel.currentPlaying = position
     }
