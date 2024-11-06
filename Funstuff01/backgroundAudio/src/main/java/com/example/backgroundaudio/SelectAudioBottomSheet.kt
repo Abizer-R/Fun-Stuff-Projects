@@ -28,6 +28,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ObsoleteCoroutinesApi
 import kotlinx.coroutines.channels.consumeEach
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class SelectAudioBottomSheet : BottomSheetDialogFragment(),
@@ -60,7 +61,9 @@ class SelectAudioBottomSheet : BottomSheetDialogFragment(),
 
     private var listener: SelectAudioBSListener? = null
     private lateinit var audioAdapter: AudioAdapter
-    private var playerHandler: PlayerHandler? = null
+
+    @Inject
+    lateinit var playerHandler: PlayerHandler
 
     private val playerListener = object : Player.Listener {
         override fun onPlaybackStateChanged(playbackState: Int) {

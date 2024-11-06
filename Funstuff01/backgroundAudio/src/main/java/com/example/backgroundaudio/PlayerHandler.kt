@@ -5,8 +5,11 @@ import android.provider.MediaStore.Audio
 import com.example.backgroundaudio.utils.AudioProcessorUtils
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.Player
+import dagger.hilt.android.scopes.ActivityScoped
+import javax.inject.Inject
 
-class PlayerHandler {
+@ActivityScoped
+class PlayerHandler @Inject constructor() {
 
     private var context: Context? = null
     private var player: ExoPlayer? = null
