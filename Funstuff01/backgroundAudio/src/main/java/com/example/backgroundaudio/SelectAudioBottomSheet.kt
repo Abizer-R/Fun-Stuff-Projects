@@ -2,7 +2,6 @@ package com.example.backgroundaudio
 
 import android.app.Activity
 import android.app.Dialog
-import android.content.ClipData
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
@@ -10,12 +9,10 @@ import android.content.res.Resources
 import android.graphics.Rect
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.os.bundleOf
 import androidx.fragment.app.activityViewModels
@@ -25,7 +22,6 @@ import com.example.backgroundaudio.utils.AudioListNotifier
 import com.example.backgroundaudio.utils.AudioProcessorUtils
 import com.google.android.exoplayer2.PlaybackException
 import com.google.android.exoplayer2.Player
-import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
@@ -63,7 +59,7 @@ class SelectAudioBottomSheet : BottomSheetDialogFragment(),
 
     private var listener: SelectAudioBSListener? = null
     private lateinit var audioAdapter: AudioAdapter
-    private var exoPlayer: SimpleExoPlayer? = null
+    private var playerHandler: PlayerHandler? = null
 
     private val playerListener = object : Player.Listener {
         override fun onPlaybackStateChanged(playbackState: Int) {
@@ -87,7 +83,7 @@ class SelectAudioBottomSheet : BottomSheetDialogFragment(),
                 }
 
                 else -> {
-                    sharedAudioViewModel.updatePlayPause(isPlaying = exoPlayer!!.isPlaying)
+                    sharedAudioViewModel.updatePlayPause(isPlaying = playerHandler?.isPlaying)
                     sharedAudioViewModel.updateProgress(isLoading = false)
                 }
             }
@@ -100,10 +96,7 @@ class SelectAudioBottomSheet : BottomSheetDialogFragment(),
                 return
             }
             sharedAudioViewModel.updateProgress(isLoading = false)
-            exoPlayer?.let {
-                it.prepare()
-                it.play()
-            }
+            playerHandler?.playCurrent(shouldPrepare = true)
         }
     }
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -128,19 +121,12 @@ class SelectAudioBottomSheet : BottomSheetDialogFragment(),
         }
 
         dialog.behavior.state = BottomSheetBehavior.STATE_EXPANDED
-//        val expandedHeight = getDisplayHeight() - getStatusBarHeight()
-//        val peekHeight = (expandedHeight * 0.75).toInt()
-//        dialog.behavior.peekHeight = peekHeight
         dialog.behavior.isDraggable = false
-
         dialog.setCancelable(true)
         dialog.setCanceledOnTouchOutside(false)
 
-        exoPlayer = SimpleExoPlayer.Builder(requireContext())
-            .build().apply {
-//                repeatMode = Player.REPEAT_MODE_ONE
-                addListener(playerListener)
-            }
+        playerHandler = PlayerHandler()
+        playerHandler?.initialize(requireContext(), playerListener)
 
         sharedAudioViewModel.resetItemsUI()
         setUpViews()
@@ -158,6 +144,7 @@ class SelectAudioBottomSheet : BottomSheetDialogFragment(),
             }
         }
         audioAdapter.submitList(sharedAudioViewModel.audioList)
+        playerHandler?.setAudioList(sharedAudioViewModel.audioList)
     }
 
     @OptIn(ObsoleteCoroutinesApi::class)
@@ -256,33 +243,30 @@ class SelectAudioBottomSheet : BottomSheetDialogFragment(),
     }
 
     override fun onPlayPauseClicked(position: Int, audioItem: AudioItemModel) {
-        exoPlayer?.let { player ->
-
-            if(sharedAudioViewModel.currentPlaying == position) {
-                if(player.playbackState == Player.STATE_BUFFERING) {
-                    return
-                }
-                if(player.isPlaying) {
-                    pauseAt(position)
-                } else {
-                    playAt(position)
-                }
-
-            } else {
-                if(player.playbackState == Player.STATE_BUFFERING) {
-                    sharedAudioViewModel.updatePlayPause(isPlaying = false)
-                    sharedAudioViewModel.updateProgress(isLoading = false)
-                    // need to make "currentSelected" -1
-                    // otherwise, the playerListener will show a misguiding toast when playbackState will be STATE_IDLE
-                    sharedAudioViewModel.currentPlaying = -1
-                    player.stop()
-
-                } else if (player.isPlaying) {
-                    sharedAudioViewModel.updatePlayPause(isPlaying = false)
-                }
-                sharedAudioViewModel.currentPlaying = position
-                initMediaItem(audioItem)
+        if(sharedAudioViewModel.currentPlaying == position) {
+            if(playerHandler?.playbackState == Player.STATE_BUFFERING) {
+                return
             }
+            if(playerHandler?.isPlaying == true) {
+                pauseAt(position)
+            } else {
+                playAt(position)
+            }
+
+        } else {
+            if(playerHandler?.playbackState == Player.STATE_BUFFERING) {
+                sharedAudioViewModel.updatePlayPause(isPlaying = false)
+                sharedAudioViewModel.updateProgress(isLoading = false)
+                // need to make "currentSelected" -1
+                // otherwise, the playerListener will show a misguiding toast when playbackState will be STATE_IDLE
+                sharedAudioViewModel.currentPlaying = -1
+                playerHandler?.stop()
+
+            } else if (playerHandler?.isPlaying == true) {
+                sharedAudioViewModel.updatePlayPause(isPlaying = false)
+            }
+            sharedAudioViewModel.currentPlaying = position
+            playerHandler?.initMediaItem(audioItem)
         }
     }
 
@@ -313,21 +297,17 @@ class SelectAudioBottomSheet : BottomSheetDialogFragment(),
         if (position < 0 || position >= sharedAudioViewModel.audioList.size) {
             return
         }
-        exoPlayer?.let {
-            it.pause()
-            sharedAudioViewModel.updatePlayPause(position, false)
-        }
+        playerHandler?.pause()
+        sharedAudioViewModel.updatePlayPause(position, false)
     }
 
     private fun playAt(position: Int) {
         if (position < 0 || position >= sharedAudioViewModel.audioList.size) {
             return
         }
-        exoPlayer?.let {
-            it.play()
-            sharedAudioViewModel.updatePlayPause(position, true)
-            sharedAudioViewModel.currentPlaying = position
-        }
+        playerHandler?.playbackState
+        sharedAudioViewModel.updatePlayPause(position, true)
+        sharedAudioViewModel.currentPlaying = position
     }
 
     private fun updateSelection(position: Int, audioItem: AudioItemModel) {
@@ -337,15 +317,6 @@ class SelectAudioBottomSheet : BottomSheetDialogFragment(),
         }
         sharedAudioViewModel.updateSelectedAudio(position)
     }
-
-    private fun initMediaItem(audioItem: AudioItemModel) {
-        exoPlayer?.let { player ->
-            player.setMediaItem(AudioProcessorUtils.getMediaItem(audioItem))
-            player.prepare()
-            player.play()
-        }
-    }
-
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -374,7 +345,7 @@ class SelectAudioBottomSheet : BottomSheetDialogFragment(),
 
     override fun onPause() {
         super.onPause()
-        if (exoPlayer?.isPlaying == true) {
+        if (playerHandler?.isPlaying == true) {
             sharedAudioViewModel.shouldPlayOnResume = true
             pauseAt(sharedAudioViewModel.currentPlaying)
         }
@@ -395,11 +366,7 @@ class SelectAudioBottomSheet : BottomSheetDialogFragment(),
 
     private fun releasePlayer() {
         sharedAudioViewModel.currentPlaying = -1
-        exoPlayer?.let {
-            if(it.isPlaying)
-                it.stop()
-            it.release()
-        }
+        playerHandler?.release()
     }
 
     interface SelectAudioBSListener {

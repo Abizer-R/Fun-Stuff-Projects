@@ -127,11 +127,11 @@ class SharedBackgroundAudioViewModel
         )
     }
 
-    fun updatePlayPause(position: Int = currentPlaying, isPlaying: Boolean) = viewModelScope.launch {
+    fun updatePlayPause(position: Int = currentPlaying, isPlaying: Boolean?) = viewModelScope.launch {
         if (position < 0 || position >= audioList.size) {
             return@launch
         }
-        _audioList[position].isPlayingCurrently = isPlaying
+        _audioList[position].isPlayingCurrently = isPlaying == true
         _audioListNotifier.send(
             AudioListNotifier.NotifyItemChanged(
                 position, SelectAudioBottomSheet.UPDATE_PLAY_PAUSE
