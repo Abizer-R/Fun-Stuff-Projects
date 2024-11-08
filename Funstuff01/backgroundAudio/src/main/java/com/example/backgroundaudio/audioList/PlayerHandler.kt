@@ -6,10 +6,10 @@ import com.example.backgroundaudio.utils.AudioProcessorUtils
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.Player
 import dagger.hilt.android.qualifiers.ActivityContext
-import dagger.hilt.android.scopes.ActivityScoped
+import dagger.hilt.android.scopes.FragmentScoped
 import javax.inject.Inject
 
-@ActivityScoped
+@FragmentScoped
 class PlayerHandler @Inject constructor(
     @ActivityContext private val context: Context
 ) {
@@ -41,7 +41,7 @@ class PlayerHandler @Inject constructor(
         }
     }
 
-    fun playCurrent(shouldPrepare: Boolean = false) {
+    fun play(shouldPrepare: Boolean = false) {
         if (shouldPrepare) player?.prepare()
         player?.playWhenReady = true
     }

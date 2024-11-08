@@ -9,16 +9,18 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.example.backgroundaudio.R
 import com.example.backgroundaudio.audioList.PlayerHandler
 import com.example.backgroundaudio.audioList.SharedBackgroundAudioViewModel
 import com.example.backgroundaudio.audioList.adapter.AudioAdapter
+import com.example.backgroundaudio.audioList.adapter.AudioAdapter.Companion.UPDATE_SELECTED_STATE
 import com.example.backgroundaudio.audioList.adapter.AudioItemModel
-import com.example.backgroundaudio.audioList.bottomsheet.SelectAudioBottomSheet.SelectAudioBSListener
 import com.example.backgroundaudio.databinding.FragmentSelectAudioBinding
 import com.example.backgroundaudio.utils.AudioListNotifier
 import com.example.backgroundaudio.utils.AudioProcessorUtils
@@ -30,7 +32,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ObsoleteCoroutinesApi
 import kotlinx.coroutines.channels.consumeEach
 import kotlinx.coroutines.launch
-import java.io.File
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -56,9 +57,9 @@ class SelectAudioFragment: Fragment(),
     private val binding get() = requireNotNull(_binding)
     private var listener: SelectAudioFragmentCallbackListener? = null
 
+    private val viewModel: SelectAudioViewModel by viewModels()
     private val sharedAudioViewModel: SharedBackgroundAudioViewModel by activityViewModels()
 
-    private var allowAudioFromDeviceStorage: Boolean = true
     private lateinit var audioAdapter: AudioAdapter
 
     @Inject
@@ -68,27 +69,19 @@ class SelectAudioFragment: Fragment(),
     private val playerListener = object : Player.Listener {
         override fun onPlaybackStateChanged(playbackState: Int) {
             super.onPlaybackStateChanged(playbackState)
-            when (playbackState) {
-                Player.STATE_BUFFERING -> {
-                    sharedAudioViewModel.updateLoadingState(true)
-                }
-
-                Player.STATE_IDLE -> {
-                    if (sharedAudioViewModel.currentPlaying != -1) {
-                        sharedAudioViewModel.resetCurrentItemState()
-                    }
-                }
-
-                else -> {
-                    sharedAudioViewModel.updatePlayingState(playerHandler.isPlaying)
-                    sharedAudioViewModel.updateLoadingState(false)
-                }
-            }
+            viewModel.updatePlayingState(playerHandler.isPlaying)
+            viewModel.updateLoadingState(playbackState == Player.STATE_BUFFERING)
         }
 
         override fun onPlayerError(error: PlaybackException) {
             super.onPlayerError(error)
-            sharedAudioViewModel.resetItems()
+            viewModel.resetCurrentItemState()
+            toast(getString(R.string.error_while_playing))
+        }
+
+        override fun onPlayerErrorChanged(error: PlaybackException?) {
+            super.onPlayerErrorChanged(error)
+            viewModel.resetCurrentItemState()
             toast(getString(R.string.error_while_playing))
         }
     }
@@ -96,7 +89,12 @@ class SelectAudioFragment: Fragment(),
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        allowAudioFromDeviceStorage = arguments?.getBoolean(ALLOW_AUDIO_FROM_DEVICE_STORAGE) ?: false
+        initArguments()
+    }
+
+    private fun initArguments() {
+        val allowAudioFromDeviceStorage = arguments?.getBoolean(ALLOW_AUDIO_FROM_DEVICE_STORAGE) ?: false
+        viewModel.updateAllowAudioFromStorage(allowAudioFromDeviceStorage)
     }
 
     override fun onCreateView(
@@ -115,15 +113,12 @@ class SelectAudioFragment: Fragment(),
 
     private fun initUserInterface() {
         playerHandler.addPlayerListener(playerListener)
-        sharedAudioViewModel.resetItems()
-
-        // If there is an already selected audio, then bring it to the top
-        if (sharedAudioViewModel.selectedAudioItem != null) {
-            sharedAudioViewModel.bringSelectedItemToTop()
-        }
+        viewModel.resetItems()
+        viewModel.bringSelectedItemToTop()
 
         setUpViews()
         setObservers()
+        viewModel.fetchAudioList()
     }
 
 
@@ -136,24 +131,33 @@ class SelectAudioFragment: Fragment(),
                 listener?.onAudioSelected()
             }
         }
-        audioAdapter.submitList(sharedAudioViewModel.audioList)
     }
 
     @OptIn(ObsoleteCoroutinesApi::class)
     private fun setObservers() {
         lifecycleScope.launch {
-            sharedAudioViewModel._audioListNotifier.consumeEach { listNotifier ->
-                audioAdapter.submitList(sharedAudioViewModel.audioList)
+            viewModel._audioListNotifier.consumeEach { listNotifier ->
+                audioAdapter.submitList(viewModel.audioList)
                 when (listNotifier) {
                     is AudioListNotifier.NotifyItemChanged -> {
                         audioAdapter.notifyItemChanged(
                             listNotifier.position,
                             listNotifier.payload
                         )
+                        if (listNotifier.payload == UPDATE_SELECTED_STATE) {
+                            sharedAudioViewModel.updateSelectedItem(viewModel.selectedAudioItem)
+                        }
                     }
 
                     is AudioListNotifier.NotifyDataChanged -> {
                         audioAdapter.notifyDataSetChanged()
+                    }
+
+                    is AudioListNotifier.NotifyItemRangeAdded -> {
+                        audioAdapter.notifyItemRangeInserted(
+                            listNotifier.positionStart,
+                            listNotifier.itemsAdded
+                        )
                     }
 
                     else -> {}
@@ -177,7 +181,7 @@ class SelectAudioFragment: Fragment(),
             addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
             type = "audio/*"
         }
-        sharedAudioViewModel.audioPickerLaunched = true
+        viewModel.audioPickerLaunched = true
         audioPicker.launch(audioPickerIntent)
     }
 
@@ -209,7 +213,7 @@ class SelectAudioFragment: Fragment(),
             .setMessage(getString(R.string.select_audio_as_background))
             .setCancelable(true)
             .setPositiveButton(getString(R.string.yes)) { dialogInterface, _ ->
-                sharedAudioViewModel.updateAudioFromStorage(audioName, audioUri)
+                viewModel.updateAudioFromStorage(audioName, audioUri)
                 dialogInterface?.dismiss()
             }
             .setNegativeButton(getString(R.string.no)) { dialogInterface, _ ->
@@ -219,28 +223,24 @@ class SelectAudioFragment: Fragment(),
     }
 
     override fun onPlayPauseClicked(position: Int, audioItem: AudioItemModel) {
-        if (sharedAudioViewModel.currentPlaying == position) {
+        if (viewModel.currentPlaying == position) {
             if (playerHandler.playbackState == Player.STATE_BUFFERING) return
-            if (playerHandler.isPlaying == true) pauseAt(position)
-            else playAt(position)
+            if (playerHandler.isPlaying) pause()
+            else play()
             return
         }
 
-        // clicked item is different than current playing item
-        // stop the prev item
-        sharedAudioViewModel.resetCurrentItemState()
-        playerHandler.stop()
-        // set the new item
-        sharedAudioViewModel.currentPlaying = position
-        playerHandler.initMediaItem(audioItem)
+        // clicked item is different than current playing item.
+        stop()  // First stop the prev item
+        initPosition(position, audioItem)  // Now set the new item
     }
 
     override fun onAudioItemClicked(position: Int, audioItem: AudioItemModel) {
-        if (position < 0 || position >= sharedAudioViewModel.audioList.size) {
+        if (position < 0 || position >= viewModel.audioList.size) {
             return
         }
         if (audioItem.isSelected) {
-            updateSelection(position, audioItem)
+            unSelectItem()
         } else {
             MaterialAlertDialogBuilder(requireContext(), R.style.AlertDialogTheme).apply {
                 setIcon(R.drawable.ic_music_card)
@@ -248,7 +248,7 @@ class SelectAudioFragment: Fragment(),
                 setMessage(getString(R.string.select_audio_as_background))
                 setCancelable(true)
                 setPositiveButton(getString(R.string.yes)) { dialogInterface, _ ->
-                    updateSelection(position, audioItem)
+                    selectItem(position)
                     dialogInterface?.dismiss()
                 }
                 setNegativeButton(getString(R.string.no)) { dialogInterface, _ ->
@@ -258,45 +258,52 @@ class SelectAudioFragment: Fragment(),
         }
     }
 
-    private fun pauseAt(position: Int) {
-        if (position < 0 || position >= sharedAudioViewModel.audioList.size) {
-            return
-        }
+    private fun initPosition(position: Int, audioItem: AudioItemModel) {
+        viewModel.currentPlaying = position
+        playerHandler.initMediaItem(audioItem)
+    }
+
+    private fun stop() {
+        playerHandler.stop()
+        viewModel.resetCurrentItemState()
+    }
+
+    private fun pause() {
         playerHandler.pause()
-        sharedAudioViewModel.updatePlayingState(false, position)
+        viewModel.updatePlayingState(false)
     }
 
-    private fun playAt(position: Int) {
-        if (position < 0 || position >= sharedAudioViewModel.audioList.size) {
-            return
-        }
-        sharedAudioViewModel.updatePlayingState(true, position)
-        sharedAudioViewModel.currentPlaying = position
+    private fun play() {
+        playerHandler.play()
+        viewModel.updatePlayingState(true)
     }
 
-    private fun updateSelection(position: Int, audioItem: AudioItemModel) {
-        if (sharedAudioViewModel.currentPlaying == 0 && sharedAudioViewModel.allowAudioFromDeviceStorage) {
-            sharedAudioViewModel.currentPlaying = -1
-            pauseAt(0)
+    private fun selectItem(position: Int) {
+        if (viewModel.currentPlaying == 0 && viewModel.allowAudioFromDeviceStorage) {
+            stop()
         }
-        sharedAudioViewModel.updateSelectedAudio(position)
+        viewModel.selectItem(position)
+    }
+
+    private fun unSelectItem() {
+        viewModel.unSelectItem()
     }
 
     override fun onPause() {
         super.onPause()
         if (playerHandler.isPlaying) {
-            sharedAudioViewModel.shouldPlayOnResume = true
-            pauseAt(sharedAudioViewModel.currentPlaying)
+            viewModel.shouldPlayOnResume = true
+            pause()
         }
     }
 
     override fun onResume() {
         super.onResume()
-        if (sharedAudioViewModel.shouldPlayOnResume && sharedAudioViewModel.audioPickerLaunched.not()) {
-            playAt(sharedAudioViewModel.currentPlaying)
+        if (viewModel.shouldPlayOnResume && viewModel.audioPickerLaunched.not()) {
+            play()
         }
-        sharedAudioViewModel.shouldPlayOnResume = false
-        sharedAudioViewModel.audioPickerLaunched = false
+        viewModel.shouldPlayOnResume = false
+        viewModel.audioPickerLaunched = false
     }
 
     override fun onAttach(context: Context) {
@@ -324,10 +331,8 @@ class SelectAudioFragment: Fragment(),
     override fun onDestroy() {
         super.onDestroy()
         playerHandler.release()
-        sharedAudioViewModel.resetCurrentItemState()
+        viewModel.resetCurrentItemState()
     }
-
-
 
     interface SelectAudioFragmentCallbackListener {
         fun onAudioSelected()

@@ -58,8 +58,6 @@ class TextToImageActivity : BaseActivity<ActivityTextToImageBinding>(ActivityTex
 
     override fun initUserInterface() {
 
-        presetAudioList()
-
         with(binding) {
 
             colorsAdapter = ColorsAdapter(this@TextToImageActivity)
@@ -102,10 +100,6 @@ class TextToImageActivity : BaseActivity<ActivityTextToImageBinding>(ActivityTex
         colorsAdapter?.submitList(TextToImageUtils.getColorResourceList())
         mainBgList.addAll(TextToImageUtils.getMainBgList())
         btnBgList.addAll(TextToImageUtils.getBtnBgList())
-    }
-
-    private fun presetAudioList() {
-        sharedAudioViewModel.setAudioList(DummyAudioList.musicList)
     }
 
     private fun handlePostClicked() {
