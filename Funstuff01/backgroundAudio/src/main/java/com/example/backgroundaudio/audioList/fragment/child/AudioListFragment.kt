@@ -1,4 +1,4 @@
-package com.example.backgroundaudio.audioList.fragment
+package com.example.backgroundaudio.audioList.fragment.child
 
 import android.app.Activity
 import android.content.Intent
@@ -22,6 +22,7 @@ import com.example.backgroundaudio.audioList.adapter.AudioItemModel
 import com.example.backgroundaudio.databinding.FragmentAudioListBinding
 import com.example.backgroundaudio.utils.AudioListNotifier
 import com.example.backgroundaudio.utils.AudioProcessorUtils
+import com.example.backgroundaudio.utils.smoothSnapToStart
 import com.example.backgroundaudio.utils.toast
 import com.google.android.exoplayer2.PlaybackException
 import com.google.android.exoplayer2.Player
@@ -147,61 +148,7 @@ class AudioListFragment: Fragment(),
         }
     }
 
-    private val audioPicker = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult()
-    ) {
-        if (it.resultCode == Activity.RESULT_OK) {
-            handleSelectedAudioFromStorage(it.data?.data)
-        }
-    }
-
-    override fun onUploadFromStorage() {
-        val audioPickerIntent = Intent().apply {
-            action = Intent.ACTION_OPEN_DOCUMENT
-            addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
-            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-            type = "audio/*"
-        }
-        viewModel.audioPickerLaunched = true
-        audioPicker.launch(audioPickerIntent)
-    }
-
-    private fun handleSelectedAudioFromStorage(audioUri: Uri?) {
-        if (audioUri == null) {
-            toast(getString(R.string.file_not_found))
-            return
-        }
-
-        val contentRes = requireContext().contentResolver
-        val audioName = AudioProcessorUtils.getAudioName(audioUri, contentRes)
-        val audioSizeInBytes = AudioProcessorUtils.getAudioSize(audioUri, contentRes)
-        val sizeInMb = audioSizeInBytes.toFloat() / (1000 * 1000)
-        val audioDuration = AudioProcessorUtils.getDurationMillis(requireContext(), audioUri)
-        val durationInSeconds = audioDuration / 1000
-
-        if (sizeInMb > 2.0) {
-            toast(getString(R.string.audio_size_must_not_be_more_than_2_mb))
-            return
-        }
-        if (durationInSeconds > 120) {
-            toast(getString(R.string.audio_duration_must_not_be_more_than_2_minutes))
-            return
-        }
-
-        MaterialAlertDialogBuilder(requireContext(), R.style.AlertDialogTheme)
-            .setIcon(R.drawable.ic_music_card)
-            .setTitle(audioName)
-            .setMessage(getString(R.string.select_audio_as_background))
-            .setCancelable(true)
-            .setPositiveButton(getString(R.string.yes)) { dialogInterface, _ ->
-                viewModel.updateAudioFromStorage(audioName, audioUri)
-                dialogInterface?.dismiss()
-            }
-            .setNegativeButton(getString(R.string.no)) { dialogInterface, _ ->
-                dialogInterface.dismiss()
-            }
-            .show()
-    }
+    override fun onUploadFromStorage() {}
 
     override fun onPlayPauseClicked(position: Int, audioItem: AudioItemModel) {
         if (viewModel.currentPlaying == position) {
@@ -267,21 +214,22 @@ class AudioListFragment: Fragment(),
         viewModel.unSelectItem()
     }
 
+    private fun scrollToSelectedPos() {
+        val selectedItemIndex = viewModel.selectedAudioItemIndex
+        if (selectedItemIndex !in 0..audioAdapter.currentList.lastIndex)
+            return
+        binding.rvAudios.smoothSnapToStart(selectedItemIndex)
+    }
+
     override fun onPause() {
         super.onPause()
-        if (playerHandler.isPlaying) {
-            viewModel.shouldPlayOnResume = true
-            pause()
-        }
+        pause()
     }
 
     override fun onResume() {
         super.onResume()
-        if (viewModel.shouldPlayOnResume && viewModel.audioPickerLaunched.not()) {
-            play()
-        }
-        viewModel.shouldPlayOnResume = false
-        viewModel.audioPickerLaunched = false
+        viewModel.selectItem(sharedAudioViewModel.selectedAudioItem)
+//        scrollToSelectedPos()
     }
 
     override fun onDestroyView() {

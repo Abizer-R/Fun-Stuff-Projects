@@ -1,4 +1,4 @@
-package com.example.backgroundaudio.audioList.fragment
+package com.example.backgroundaudio.audioList.fragment.child
 
 import android.net.Uri
 import androidx.lifecycle.ViewModel
@@ -27,12 +27,12 @@ class AudioListViewModel
 
     val _audioListNotifier = BroadcastChannel<AudioListNotifier>(Channel.BUFFERED)
     var currentPlaying: Int = -1
-    var audioPickerLaunched: Boolean = false
-    var shouldPlayOnResume: Boolean = false
 
-    private var selectedAudioItemIndex: Int = -1
-    var selectedAudioItem: AudioItemModel? = null
+    var selectedAudioItemIndex: Int = -1
         private set
+    val selectedAudioItem: AudioItemModel?
+        get() = audioList.getOrNull(selectedAudioItemIndex)
+
     var initiallySelectedAudioItem: AudioItemModel? = null
 
     fun fetchAudioList() = viewModelScope.launch {
@@ -47,7 +47,6 @@ class AudioListViewModel
             audioList.indexOfFirst { it.url == initiallySelectedAudioItem?.url }
         if (initiallySelectedItemIdx in 0..audioList.lastIndex) {
             _audioList[initiallySelectedItemIdx].isSelected = true
-            selectedAudioItem = audioList[initiallySelectedItemIdx]
             selectedAudioItemIndex = initiallySelectedItemIdx
             initiallySelectedAudioItem = null
         }
@@ -61,12 +60,9 @@ class AudioListViewModel
         )
     }
 
-    fun updateAudioFromStorage(audioName: String, uri: Uri) {
-        _audioList[0].apply {
-            name = audioName
-            storageUri = uri
-        }
-        selectItem(0)
+    fun selectItem(audioItemModel: AudioItemModel?) {
+        val position = audioList.indexOfFirst { it.url == audioItemModel?.url }
+        selectItem(position)
     }
 
     fun selectItem(position: Int) = viewModelScope.launch {
@@ -75,10 +71,8 @@ class AudioListViewModel
 
         val unselectJob = unSelectItem()
         unselectJob.join()
-//        async { unSelectItem() }.await()  // unselect the currently selected audio item
 
         selectedAudioItemIndex = position
-        selectedAudioItem = audioList[position]
 
         _audioList[position].isSelected = true
         _audioListNotifier.send(
@@ -94,7 +88,6 @@ class AudioListViewModel
 
         val prevSelectedPos = selectedAudioItemIndex
         selectedAudioItemIndex = -1
-        selectedAudioItem = null
 
         _audioList[prevSelectedPos].isSelected = false
         _audioListNotifier.send(
@@ -102,19 +95,6 @@ class AudioListViewModel
                 prevSelectedPos, UPDATE_SELECTED_STATE
             )
         )
-    }
-
-    fun bringSelectedItemToTop() = viewModelScope.launch {
-        if (selectedAudioItem == null)
-            return@launch
-
-        val selectedIdx = audioList.indexOfFirst { it.url == selectedAudioItem?.url }
-        if (selectedIdx !in 0..audioList.lastIndex)
-            return@launch
-
-        _audioList.removeAt(selectedIdx)
-        _audioList.add(0, selectedAudioItem!!)
-        selectedAudioItemIndex = 0
     }
 
     fun resetCurrentItemState() = viewModelScope.launch {

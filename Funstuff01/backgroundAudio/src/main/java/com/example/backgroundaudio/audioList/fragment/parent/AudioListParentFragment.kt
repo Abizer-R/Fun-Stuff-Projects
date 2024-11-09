@@ -1,4 +1,4 @@
-package com.example.backgroundaudio.audioList.fragment
+package com.example.backgroundaudio.audioList.fragment.parent
 
 import android.content.Context
 import android.os.Bundle
@@ -10,7 +10,10 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commitNow
 import com.example.backgroundaudio.R
+import com.example.backgroundaudio.audioList.fragment.child.AudioListFragment
 import com.example.backgroundaudio.databinding.FragmentAudioListParentBinding
+import com.google.android.material.tabs.TabLayout
+import com.google.android.material.tabs.TabLayoutMediator
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -27,6 +30,8 @@ class AudioListParentFragment : Fragment() {
     private val binding: FragmentAudioListParentBinding
         get() = requireNotNull(_binding)
 
+    private var tabsAdapter: AudioTabsAdapter? = null
+
     private var listener: SelectAudioCallbackListener? = null
 
     override fun onCreateView(
@@ -42,11 +47,11 @@ class AudioListParentFragment : Fragment() {
 
         with(binding) {
             setupToolbar()
+            setupViewPager()
             icDone.setOnClickListener {
                 listener?.onAudioSelected()
             }
         }
-        attachFragment()
     }
 
     private fun setupToolbar() {
@@ -59,13 +64,26 @@ class AudioListParentFragment : Fragment() {
         }
     }
 
-    private fun attachFragment() {
-        childFragmentManager.commitNow {
-            replace(
-                binding.fragmentContainer.id,
-                AudioListFragment.newInstance()
-            )
-        }
+    private fun setupViewPager() {
+
+        val fragmentList = arrayListOf<Fragment>()
+        tabsAdapter = AudioTabsAdapter(fragmentList, childFragmentManager, lifecycle)
+        binding.viewPager.adapter = tabsAdapter
+
+        fragmentList.add(AudioListFragment.newInstance())
+        fragmentList.add(AudioListFragment.newInstance())
+        tabsAdapter?.notifyItemRangeInserted(0, fragmentList.size)
+        binding.viewPager.offscreenPageLimit = fragmentList.size
+
+        TabLayoutMediator(
+            binding.tabLayout, binding.viewPager
+        ) { tab: TabLayout.Tab, position: Int ->
+            val tabName = when (position) {
+                0 ->    getString(R.string.for_you)
+                else -> getString(R.string.your_music)
+            }
+            tab.text = tabName
+        }.attach()
     }
 
     override fun onAttach(context: Context) {
