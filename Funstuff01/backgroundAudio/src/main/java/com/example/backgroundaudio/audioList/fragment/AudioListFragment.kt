@@ -1,7 +1,6 @@
 package com.example.backgroundaudio.audioList.fragment
 
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -9,7 +8,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.activity.viewModels
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -17,11 +15,11 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.example.backgroundaudio.R
 import com.example.backgroundaudio.audioList.PlayerHandler
-import com.example.backgroundaudio.audioList.SharedBackgroundAudioViewModel
+import com.example.backgroundaudio.audioList.SharedAudioViewModel
 import com.example.backgroundaudio.audioList.adapter.AudioAdapter
 import com.example.backgroundaudio.audioList.adapter.AudioAdapter.Companion.UPDATE_SELECTED_STATE
 import com.example.backgroundaudio.audioList.adapter.AudioItemModel
-import com.example.backgroundaudio.databinding.FragmentSelectAudioBinding
+import com.example.backgroundaudio.databinding.FragmentAudioListBinding
 import com.example.backgroundaudio.utils.AudioListNotifier
 import com.example.backgroundaudio.utils.AudioProcessorUtils
 import com.example.backgroundaudio.utils.toast
@@ -35,30 +33,22 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class SelectAudioFragment: Fragment(),
+class AudioListFragment: Fragment(),
     AudioAdapter.AudioClickListener
 {
 
-
     companion object {
 
-        const val ALLOW_AUDIO_FROM_DEVICE_STORAGE = "ALLOW_AUDIO_FROM_DEVICE_STORAGE"
-
-        fun newInstance(
-            allowAudioFromDeviceStorage: Boolean = true
-        ) = SelectAudioFragment().apply {
-            arguments = bundleOf(
-                ALLOW_AUDIO_FROM_DEVICE_STORAGE to allowAudioFromDeviceStorage
-            )
+        fun newInstance() = AudioListFragment().apply {
+            arguments = bundleOf()
         }
     }
 
-    private var _binding: FragmentSelectAudioBinding? = null
+    private var _binding: FragmentAudioListBinding? = null
     private val binding get() = requireNotNull(_binding)
-    private var listener: SelectAudioFragmentCallbackListener? = null
 
-    private val viewModel: SelectAudioViewModel by viewModels()
-    private val sharedAudioViewModel: SharedBackgroundAudioViewModel by activityViewModels()
+    private val viewModel: AudioListViewModel by viewModels()
+    private val sharedAudioViewModel: SharedAudioViewModel by activityViewModels()
 
     private lateinit var audioAdapter: AudioAdapter
 
@@ -86,23 +76,12 @@ class SelectAudioFragment: Fragment(),
         }
     }
 
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        initArguments()
-    }
-
-    private fun initArguments() {
-        val allowAudioFromDeviceStorage = arguments?.getBoolean(ALLOW_AUDIO_FROM_DEVICE_STORAGE) ?: false
-        viewModel.updateAllowAudioFromStorage(allowAudioFromDeviceStorage)
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentSelectAudioBinding.inflate(layoutInflater)
+        _binding = FragmentAudioListBinding.inflate(layoutInflater)
         return binding.root
     }
 
@@ -113,23 +92,25 @@ class SelectAudioFragment: Fragment(),
 
     private fun initUserInterface() {
         playerHandler.addPlayerListener(playerListener)
-        viewModel.resetItems()
-        viewModel.bringSelectedItemToTop()
 
         setUpViews()
         setObservers()
+
+        updateInitialSelectedItem()
         viewModel.fetchAudioList()
+    }
+
+    private fun updateInitialSelectedItem() {
+        viewModel.initiallySelectedAudioItem = sharedAudioViewModel.selectedAudioItem
     }
 
 
     private fun setUpViews() {
         with(binding) {
-            audioAdapter = AudioAdapter(this@SelectAudioFragment)
+            audioAdapter = AudioAdapter(this@AudioListFragment)
             rvAudios.adapter = audioAdapter
 
-            icDone.setOnClickListener {
-                listener?.onAudioSelected()
-            }
+
         }
     }
 
@@ -279,9 +260,6 @@ class SelectAudioFragment: Fragment(),
     }
 
     private fun selectItem(position: Int) {
-        if (viewModel.currentPlaying == 0 && viewModel.allowAudioFromDeviceStorage) {
-            stop()
-        }
         viewModel.selectItem(position)
     }
 
@@ -306,23 +284,6 @@ class SelectAudioFragment: Fragment(),
         viewModel.audioPickerLaunched = false
     }
 
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        val parentFragment = parentFragment
-        val activity = activity
-        if (parentFragment is SelectAudioFragmentCallbackListener) {
-            listener = parentFragment
-        } else if (activity is SelectAudioFragmentCallbackListener) {
-            listener = activity
-        }
-    }
-
-    override fun onDetach() {
-        super.onDetach()
-        listener = null
-    }
-
-
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
@@ -334,7 +295,4 @@ class SelectAudioFragment: Fragment(),
         viewModel.resetCurrentItemState()
     }
 
-    interface SelectAudioFragmentCallbackListener {
-        fun onAudioSelected()
-    }
 }

@@ -7,7 +7,6 @@ import com.example.backgroundaudio.audioList.adapter.AudioAdapter.Companion.UPDA
 import com.example.backgroundaudio.audioList.adapter.AudioAdapter.Companion.UPDATE_PLAY_PAUSE
 import com.example.backgroundaudio.audioList.adapter.AudioAdapter.Companion.UPDATE_SELECTED_STATE
 import com.example.backgroundaudio.audioList.adapter.AudioItemModel
-import com.example.backgroundaudio.audioList.adapter.AudioItemType
 import com.example.backgroundaudio.utils.AudioListNotifier
 import com.example.backgroundaudio.utils.DummyAudioList
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -19,7 +18,7 @@ import javax.inject.Inject
 
 @OptIn(ObsoleteCoroutinesApi::class)
 @HiltViewModel
-class SelectAudioViewModel
+class AudioListViewModel
 @Inject constructor(
 ) : ViewModel() {
 
@@ -34,43 +33,32 @@ class SelectAudioViewModel
     private var selectedAudioItemIndex: Int = -1
     var selectedAudioItem: AudioItemModel? = null
         private set
-
-    private var _allowAudioFromDeviceStorage = true
-    val allowAudioFromDeviceStorage get() = _allowAudioFromDeviceStorage
-
-    fun updateAllowAudioFromStorage(shouldAllow: Boolean) {
-        _allowAudioFromDeviceStorage = shouldAllow
-    }
+    var initiallySelectedAudioItem: AudioItemModel? = null
 
     fun fetchAudioList() = viewModelScope.launch {
-        if (allowAudioFromDeviceStorage && audioList.getOrNull(0)?.itemType != AudioItemType.UPLOAD_FROM_DEVICE) {
-            _audioList.add(
-                index = 0,
-                element = AudioItemModel(
-                    "", "", "", "", "",
-                    itemType = AudioItemType.UPLOAD_FROM_DEVICE
-                )
-            )
-        }
-
-        val newList = DummyAudioList.musicList
+        val newList = DummyAudioList.getMusicList()
         _audioList.addAll(newList)
+        updateInitiallySelectedItem()
         _audioListNotifier.send(AudioListNotifier.NotifyDataChanged)
+    }
 
-        val selectedItemIdx = audioList.indexOfFirst { it.url == selectedAudioItem?.url }
-        if (selectedItemIdx != -1) {
-            _audioList[selectedItemIdx].isSelected = true
-            selectedAudioItem = audioList[selectedItemIdx]
-            selectedAudioItemIndex = selectedItemIdx
+    private fun updateInitiallySelectedItem() {
+        val initiallySelectedItemIdx =
+            audioList.indexOfFirst { it.url == initiallySelectedAudioItem?.url }
+        if (initiallySelectedItemIdx in 0..audioList.lastIndex) {
+            _audioList[initiallySelectedItemIdx].isSelected = true
+            selectedAudioItem = audioList[initiallySelectedItemIdx]
+            selectedAudioItemIndex = initiallySelectedItemIdx
+            initiallySelectedAudioItem = null
         }
     }
 
-    fun resetItems() {
-        audioList.forEach {
-            it.isPlayingCurrently = false
-            it.isLoading = false
-        }
+    fun resetItems() = viewModelScope.launch {
+        _audioList.clear()
         currentPlaying = -1
+        _audioListNotifier.send(
+            AudioListNotifier.NotifyDataChanged
+        )
     }
 
     fun updateAudioFromStorage(audioName: String, uri: Uri) {
@@ -85,7 +73,9 @@ class SelectAudioViewModel
         if (position !in 0..audioList.lastIndex)
             return@launch
 
-        unSelectItem().join()  // unselect the currently selected audio item
+        val unselectJob = unSelectItem()
+        unselectJob.join()
+//        async { unSelectItem() }.await()  // unselect the currently selected audio item
 
         selectedAudioItemIndex = position
         selectedAudioItem = audioList[position]
@@ -123,14 +113,8 @@ class SelectAudioViewModel
             return@launch
 
         _audioList.removeAt(selectedIdx)
-        val newIndex =
-            if (selectedAudioItem?.itemType == AudioItemType.UPLOAD_FROM_DEVICE) 0
-            else if (allowAudioFromDeviceStorage) 1 else 0
-        _audioList.add(newIndex, selectedAudioItem!!)
-        selectedAudioItemIndex = newIndex
-        _audioListNotifier.send(
-            AudioListNotifier.NotifyDataChanged
-        )
+        _audioList.add(0, selectedAudioItem!!)
+        selectedAudioItemIndex = 0
     }
 
     fun resetCurrentItemState() = viewModelScope.launch {

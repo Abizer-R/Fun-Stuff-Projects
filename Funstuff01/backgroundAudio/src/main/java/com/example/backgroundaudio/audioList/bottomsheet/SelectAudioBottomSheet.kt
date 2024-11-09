@@ -5,10 +5,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
 import androidx.core.os.bundleOf
 import androidx.fragment.app.commitNow
-import com.example.backgroundaudio.audioList.fragment.SelectAudioFragment
-import com.example.backgroundaudio.audioList.fragment.SelectAudioFragment.Companion.ALLOW_AUDIO_FROM_DEVICE_STORAGE
+import com.example.backgroundaudio.audioList.fragment.AudioListParentFragment
+import com.example.backgroundaudio.audioList.fragment.AudioListParentFragment.SelectAudioCallbackListener
 import com.example.backgroundaudio.databinding.BottomSheetSelectAudioBinding
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -17,17 +18,13 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class SelectAudioBottomSheet : BottomSheetDialogFragment(),
-    SelectAudioFragment.SelectAudioFragmentCallbackListener
+    SelectAudioCallbackListener
 {
 
     companion object {
 
-        fun newInstance(
-            allowAudioFromDeviceStorage: Boolean = true
-        ) = SelectAudioBottomSheet().apply {
-            arguments = bundleOf(
-                ALLOW_AUDIO_FROM_DEVICE_STORAGE to allowAudioFromDeviceStorage
-            )
+        fun newInstance() = SelectAudioBottomSheet().apply {
+            arguments = bundleOf()
         }
     }
 
@@ -36,6 +33,12 @@ class SelectAudioBottomSheet : BottomSheetDialogFragment(),
         get() = requireNotNull(_binding)
 
     private var listener: SelectAudioBSListener? = null
+
+    private val backPressCallback = object : OnBackPressedCallback(true) {
+        override fun handleOnBackPressed() {
+            dismissAllowingStateLoss()
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -47,9 +50,10 @@ class SelectAudioBottomSheet : BottomSheetDialogFragment(),
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        activity?.onBackPressedDispatcher?.addCallback(viewLifecycleOwner, backPressCallback)
         setUpBottomSheet()
         attachFragment()
-
     }
 
     private fun setUpBottomSheet() {
@@ -61,11 +65,10 @@ class SelectAudioBottomSheet : BottomSheetDialogFragment(),
     }
 
     private fun attachFragment() {
-        val allowAudioFromDeviceStorage = arguments?.getBoolean(ALLOW_AUDIO_FROM_DEVICE_STORAGE) ?: false
         childFragmentManager.commitNow {
             replace(
                 binding.fragmentContainer.id,
-                SelectAudioFragment.newInstance(allowAudioFromDeviceStorage)
+                AudioListParentFragment.newInstance()
             )
         }
     }

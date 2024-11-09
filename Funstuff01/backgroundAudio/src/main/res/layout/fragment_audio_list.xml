@@ -27,40 +27,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical">
-
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" >
-
-                    <androidx.appcompat.widget.AppCompatTextView
-                        android:id="@+id/titleTextView"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginVertical="@dimen/_10sdp"
-                        android:layout_marginHorizontal="@dimen/_42sdp"
-                        android:gravity="center"
-                        android:text="@string/select_audio"
-                        android:textColor="@color/colorOnBackground"
-                        android:textSize="@dimen/_18ssp"
-                        android:textStyle="bold"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintBottom_toBottomOf="parent"/>
-
-                    <androidx.appcompat.widget.AppCompatImageView
-                        android:id="@+id/icDone"
-                        android:layout_width="@dimen/_24sdp"
-                        android:layout_height="@dimen/_24sdp"
-                        app:srcCompat="@drawable/ic_tick"
-                        android:layout_marginEnd="@dimen/_8sdp"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent" />
-
-                </androidx.constraintlayout.widget.ConstraintLayout>
-
-
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rvAudios"
                     android:layout_width="match_parent"

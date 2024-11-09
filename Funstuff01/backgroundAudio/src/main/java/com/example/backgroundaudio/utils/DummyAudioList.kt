@@ -6,7 +6,15 @@ object DummyAudioList {
     const val imageEndPoint = "https://media-prod.jigrr.com/images/crop/"
     const val musicEndPoint = "https://media-prod.jigrr.com/documents/crop/"
 
-    val musicList = arrayListOf(
+    fun getMusicList(): ArrayList<AudioItemModel> {
+        val newList = arrayListOf<AudioItemModel>()
+        musicList.forEach { musicItem ->
+            newList.add(musicItem.copy())
+        }
+        return newList
+    }
+
+    private val musicList = arrayListOf(
         AudioItemModel(
             index = "11",
             name = "Only Forward",

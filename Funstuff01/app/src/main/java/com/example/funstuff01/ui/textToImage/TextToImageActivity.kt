@@ -20,8 +20,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.backgroundaudio.audioList.adapter.AudioItemModel
 import com.example.backgroundaudio.audioList.adapter.AudioItemType
 import com.example.backgroundaudio.audioList.bottomsheet.SelectAudioBottomSheet
-import com.example.backgroundaudio.audioList.SharedBackgroundAudioViewModel
-import com.example.backgroundaudio.utils.DummyAudioList
+import com.example.backgroundaudio.audioList.SharedAudioViewModel
 import com.example.backgroundaudio.utils.AudioProcessorUtils
 import com.example.funstuff01.R
 import com.example.funstuff01.ui.base.BaseActivity
@@ -54,7 +53,7 @@ class TextToImageActivity : BaseActivity<ActivityTextToImageBinding>(ActivityTex
     private var colorsAdapter: ColorsAdapter? = null
     private var customProgressDialog: CustomProgressDialog? = null
 
-    private val sharedAudioViewModel: SharedBackgroundAudioViewModel by viewModels()
+    private val sharedAudioViewModel: SharedAudioViewModel by viewModels()
 
     override fun initUserInterface() {
 
