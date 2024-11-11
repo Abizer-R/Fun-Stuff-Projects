@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -17,6 +18,7 @@ import com.example.backgroundaudio.audioList.adapter.AudioAdapter.Companion.UPDA
 import com.example.backgroundaudio.audioList.adapter.AudioItemModel
 import com.example.backgroundaudio.databinding.FragmentAudioListBinding
 import com.example.backgroundaudio.utils.AudioListNotifier
+import com.example.backgroundaudio.utils.ResultData
 import com.example.backgroundaudio.utils.smoothSnapToStart
 import com.example.backgroundaudio.utils.toast
 import com.google.android.exoplayer2.PlaybackException
@@ -112,6 +114,31 @@ class AudioListFragment: Fragment(),
 
     @OptIn(ObsoleteCoroutinesApi::class)
     private fun setObservers() {
+
+        viewModel.audioListResponseLiveData.observe(viewLifecycleOwner) { result ->
+            when (result) {
+                is ResultData.Loading -> {
+                    if (viewModel.audioList.isEmpty()) {
+                        binding.progressBar.isVisible = true
+                        binding.errorLayout.clErrorLayout.isVisible = false
+                    }
+                }
+
+                is ResultData.Failed -> {
+                    binding.errorLayout.clErrorLayout.isVisible = true
+                    binding.errorLayout.errorTitleTextView.text =
+                        result.message ?: getString(R.string.something_went_wrong_msg)
+                    binding.progressBar.isVisible = false
+                    binding.rvAudios.isVisible = false
+                }
+
+                is ResultData.Success -> {
+                    binding.rvAudios.isVisible = true
+                    binding.progressBar.isVisible = false
+                    binding.errorLayout.clErrorLayout.isVisible = false
+                }
+            }
+        }
         lifecycleScope.launch {
             viewModel._audioListNotifier.consumeEach { listNotifier ->
                 audioAdapter.submitList(viewModel.audioList)

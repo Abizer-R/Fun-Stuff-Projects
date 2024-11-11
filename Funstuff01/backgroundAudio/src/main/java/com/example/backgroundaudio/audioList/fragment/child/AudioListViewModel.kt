@@ -1,6 +1,8 @@
 package com.example.backgroundaudio.audioList.fragment.child
 
 import android.net.Uri
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.backgroundaudio.audioList.adapter.AudioAdapter.Companion.UPDATE_LOADING_STATE
@@ -9,11 +11,15 @@ import com.example.backgroundaudio.audioList.adapter.AudioAdapter.Companion.UPDA
 import com.example.backgroundaudio.audioList.adapter.AudioItemModel
 import com.example.backgroundaudio.utils.AudioListNotifier
 import com.example.backgroundaudio.utils.DummyAudioList
+import com.example.backgroundaudio.utils.DummyAudioList.MusicListResponse
+import com.example.backgroundaudio.utils.ResultData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.ObsoleteCoroutinesApi
 import kotlinx.coroutines.channels.BroadcastChannel
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import java.util.concurrent.atomic.AtomicBoolean
 import javax.inject.Inject
@@ -26,6 +32,10 @@ class AudioListViewModel
 
     private val _audioList = arrayListOf<AudioItemModel>()
     val audioList: List<AudioItemModel> get() = _audioList
+
+    private val _audioListResponseLiveData =
+        MutableLiveData<ResultData<MusicListResponse>>()
+    val audioListResponseLiveData: LiveData<ResultData<MusicListResponse>> get() = _audioListResponseLiveData
 
     val _audioListNotifier = BroadcastChannel<AudioListNotifier>(Channel.BUFFERED)
     var currentPlaying: Int = -1
@@ -64,17 +74,44 @@ class AudioListViewModel
                 )
             }
 
-
-            val response = DummyAudioList.getMusicList(
+            DummyAudioList.getMusicList(
                 page = pageCount,
                 limit = pageSize,
                 keyword = searchQuery
-            )
-            _audioList.addAll(response.musicList)
-            pageCount++
-            isLastPage.set(response.isLastPage)
-            updateInitiallySelectedItem()
-            _audioListNotifier.send(AudioListNotifier.NotifyDataChanged)
+            ).onEach { result ->
+                when (result) {
+                    is ResultData.Loading -> {
+                        if (audioList.isNotEmpty()) {
+                            // we will show default progressbar for first time
+                            // and then local loadingView in recyclerview
+                            addLoader()
+                        }
+                        isLoading.set(true)
+                    }
+                    is ResultData.Failed -> {
+                        removeLoaderIfAdded()
+                        isLoading.set(false)
+                    }
+                    is ResultData.Success -> {
+                        removeLoaderIfAdded()
+                        pageCount++
+
+                        val response = result.data
+                        isLoading.set(false)
+                        isLastPage.set(response.isLastPage)
+
+                        val startIndex = audioList.size
+                        _audioList.addAll(response.musicList)
+                        updateInitiallySelectedItem()
+                        _audioListNotifier.send(
+                            AudioListNotifier.NotifyItemRangeAdded(
+                                startIndex, response.musicList.size
+                            )
+                        )
+                    }
+                }
+                _audioListResponseLiveData.postValue(result)
+            }.collect()
         }
     }
 
@@ -86,6 +123,28 @@ class AudioListViewModel
             _audioList[initiallySelectedItemIdx].isSelected = true
             selectedAudioItemIndex = initiallySelectedItemIdx
             initiallySelectedAudioItem = null
+        }
+    }
+
+
+    private fun addLoader() = viewModelScope.launch {
+        _audioList.add(AudioItemModel(isLoader = true))
+        _audioListNotifier.send(
+            AudioListNotifier.NotifyItemAdded(audioList.lastIndex)
+        )
+    }
+
+    private fun removeLoaderIfAdded() = viewModelScope.launch {
+        audioList.reversed().filter {
+            it.isLoader
+        }.forEach {
+            val index = audioList.indexOf(it)
+            if (index != -1) {
+                _audioList.removeAt(index)
+                _audioListNotifier.send(
+                    AudioListNotifier.NotifyItemRemoved(audioList.lastIndex)
+                )
+            }
         }
     }
 

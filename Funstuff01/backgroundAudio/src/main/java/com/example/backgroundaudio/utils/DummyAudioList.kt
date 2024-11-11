@@ -1,6 +1,11 @@
 package com.example.backgroundaudio.utils
 
 import com.example.backgroundaudio.audioList.adapter.AudioItemModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 
 object DummyAudioList {
     const val imageEndPoint = "https://media-prod.jigrr.com/images/crop/"
@@ -11,11 +16,12 @@ object DummyAudioList {
         val isLastPage: Boolean
     )
 
-    fun getMusicList(
+    suspend fun getMusicList(
         page: Int,
         limit: Int,
         keyword: String?
-    ): MusicListResponse {
+    ): Flow<ResultData<MusicListResponse>> = flow {
+        emit(ResultData.Loading())
         val keywordLowercase = keyword?.lowercase() ?: ""
         val filteredList = musicList.filter {
             it.name.lowercase().contains(keywordLowercase)
@@ -27,11 +33,18 @@ object DummyAudioList {
         for (inx in startIndex..endIndex) {
             newList.add(filteredList[inx].copy())
         }
-        return MusicListResponse(
-            musicList = newList,
-            isLastPage = page == 3
+        val result = ResultData.Success(
+            MusicListResponse(
+                musicList = newList,
+                isLastPage = page == 3
+            )
         )
-    }
+        kotlinx.coroutines.delay(3000)
+        emit(result)
+    }.catch {
+        it.printStackTrace()
+        emit(ResultData.Failed(it))
+    }.flowOn(Dispatchers.IO)
 
     private val musicList = arrayListOf(
         // index - 1

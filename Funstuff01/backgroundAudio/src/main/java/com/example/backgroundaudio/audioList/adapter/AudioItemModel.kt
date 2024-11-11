@@ -6,17 +6,18 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class AudioItemModel(
-    val author: String,
-    val index: String,
-    var name: String,
-    val url: String,
-    val icon: String,
+    val author: String = "",
+    val index: String = "",
+    var name: String = "",
+    val url: String = "",
+    val icon: String = "",
     val durationInMillis: Long = 0,
     var storageUri: Uri? = null,
     val itemType: AudioItemType = AudioItemType.AUDIO_FILE,
     var isPlayingCurrently: Boolean = false,
     var isLoading: Boolean = false,
-    var isSelected: Boolean = false
+    var isSelected: Boolean = false,
+    val isLoader: Boolean = false
 ) : Parcelable
 
 enum class AudioItemType {
