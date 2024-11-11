@@ -1,6 +1,7 @@
 package com.example.backgroundaudio.audioList.fragment.child
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,6 +19,7 @@ import com.example.backgroundaudio.audioList.adapter.AudioAdapter.Companion.UPDA
 import com.example.backgroundaudio.audioList.adapter.AudioItemModel
 import com.example.backgroundaudio.databinding.FragmentAudioListBinding
 import com.example.backgroundaudio.utils.AudioListNotifier
+import com.example.backgroundaudio.utils.PaginationScrollListener
 import com.example.backgroundaudio.utils.ResultData
 import com.example.backgroundaudio.utils.smoothSnapToStart
 import com.example.backgroundaudio.utils.toast
@@ -25,8 +27,10 @@ import com.google.android.exoplayer2.PlaybackException
 import com.google.android.exoplayer2.Player
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ObsoleteCoroutinesApi
 import kotlinx.coroutines.channels.consumeEach
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -74,6 +78,22 @@ class AudioListFragment: Fragment(),
         }
     }
 
+    private val recyclerViewScrollListener: PaginationScrollListener by lazy {
+        object : PaginationScrollListener() {
+            override fun loadMoreItems() {
+                viewModel.fetchAudioList()
+            }
+
+            override fun isLastPage(): Boolean {
+                return viewModel.isLastPage.get()
+            }
+
+            override fun isLoading(): Boolean {
+                return viewModel.isLoading.get()
+            }
+        }
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -107,8 +127,7 @@ class AudioListFragment: Fragment(),
         with(binding) {
             audioAdapter = AudioAdapter(this@AudioListFragment)
             rvAudios.adapter = audioAdapter
-
-
+            rvAudios.addOnScrollListener(recyclerViewScrollListener)
         }
     }
 
@@ -142,6 +161,8 @@ class AudioListFragment: Fragment(),
         lifecycleScope.launch {
             viewModel._audioListNotifier.consumeEach { listNotifier ->
                 audioAdapter.submitList(viewModel.audioList)
+                Log.d("TEST_list", "setObservers: listNotifier = $listNotifier")
+                Log.d("TEST_list", "setObservers: list = ${viewModel.audioList.map { it.index }}")
                 when (listNotifier) {
                     is AudioListNotifier.NotifyItemChanged -> {
                         audioAdapter.notifyItemChanged(
@@ -162,6 +183,21 @@ class AudioListFragment: Fragment(),
                             listNotifier.positionStart,
                             listNotifier.itemsAdded
                         )
+                    }
+
+                    is AudioListNotifier.NotifyItemAdded -> {
+                        audioAdapter.notifyItemInserted(listNotifier.position)
+                    }
+
+                    is AudioListNotifier.NotifyItemRangeRemoved -> {
+                        audioAdapter.notifyItemRangeRemoved(
+                            listNotifier.positionStart,
+                            listNotifier.itemsRemoved
+                        )
+                    }
+
+                    is AudioListNotifier.NotifyItemRemoved -> {
+                        audioAdapter.notifyItemRemoved(listNotifier.position)
                     }
 
                     else -> {}

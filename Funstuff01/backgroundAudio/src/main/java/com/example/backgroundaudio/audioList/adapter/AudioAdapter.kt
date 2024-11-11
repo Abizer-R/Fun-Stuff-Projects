@@ -1,5 +1,6 @@
 package com.example.backgroundaudio.audioList.adapter
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.view.isVisible
@@ -44,6 +45,14 @@ class AudioAdapter(
     inner class AudioViewHolder(private val binding: AudioListItemBinding) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(audioItem: AudioItemModel) {
+            if (audioItem.isLoader) {
+                binding.progressBarCenter.isVisible = true
+                binding.clRoot.isVisible = false
+                return
+            }
+
+            binding.progressBarCenter.isVisible = false
+            binding.clRoot.isVisible = true
             with(binding) {
                 // Define initial State of all components to avoid inconsistencies
                 tvAudioTitle.text = audioItem.name

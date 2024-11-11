@@ -1,6 +1,7 @@
 package com.example.backgroundaudio.audioList.fragment.child
 
 import android.net.Uri
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -21,8 +22,10 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import java.util.UUID
 import java.util.concurrent.atomic.AtomicBoolean
 import javax.inject.Inject
+import kotlin.random.Random
 
 @OptIn(ObsoleteCoroutinesApi::class)
 @HiltViewModel
@@ -88,12 +91,16 @@ class AudioListViewModel
                         }
                         isLoading.set(true)
                     }
+
                     is ResultData.Failed -> {
                         removeLoaderIfAdded()
                         isLoading.set(false)
                     }
+
                     is ResultData.Success -> {
+                        Log.i("TEST_list", "ResultData.Success: listSize BEFORE = ${audioList.size}")
                         removeLoaderIfAdded()
+//                        removeLoaderIfAdded().apply { join() }
                         pageCount++
 
                         val response = result.data
@@ -103,6 +110,7 @@ class AudioListViewModel
                         val startIndex = audioList.size
                         _audioList.addAll(response.musicList)
                         updateInitiallySelectedItem()
+                        Log.v("TEST_list", "ResultData.Success: listSize AFTER = ${audioList.size}")
                         _audioListNotifier.send(
                             AudioListNotifier.NotifyItemRangeAdded(
                                 startIndex, response.musicList.size
@@ -127,22 +135,30 @@ class AudioListViewModel
     }
 
 
-    private fun addLoader() = viewModelScope.launch {
-        _audioList.add(AudioItemModel(isLoader = true))
+    private suspend fun addLoader() {
+        _audioList.add(
+            AudioItemModel(
+                index = System.currentTimeMillis().toString(),
+                isLoader = true
+            )
+        )
+        Log.v("TEST_list", "addLoader(): index = ${audioList.lastIndex}")
         _audioListNotifier.send(
             AudioListNotifier.NotifyItemAdded(audioList.lastIndex)
         )
     }
 
-    private fun removeLoaderIfAdded() = viewModelScope.launch {
+    private suspend fun removeLoaderIfAdded() {
+        // launching separate viewModelScope might cause inconsistency exception
         audioList.reversed().filter {
             it.isLoader
         }.forEach {
             val index = audioList.indexOf(it)
             if (index != -1) {
+                Log.v("TEST_list", "removeLoaderIfAdded(): removeAt = ${index}")
                 _audioList.removeAt(index)
                 _audioListNotifier.send(
-                    AudioListNotifier.NotifyItemRemoved(audioList.lastIndex)
+                    AudioListNotifier.NotifyItemRemoved(index)
                 )
             }
         }
