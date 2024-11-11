@@ -58,6 +58,9 @@ class SelectAudioBottomSheet : BottomSheetDialogFragment(),
 
     private fun setUpBottomSheet() {
         val dialog = dialog as BottomSheetDialog
+        val bottomSheet =
+            dialog.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)
+        bottomSheet?.layoutParams?.height = ViewGroup.LayoutParams.MATCH_PARENT
         dialog.behavior.state = BottomSheetBehavior.STATE_EXPANDED
         dialog.behavior.isDraggable = false
         dialog.setCancelable(true)

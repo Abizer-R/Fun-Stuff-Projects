@@ -6,15 +6,35 @@ object DummyAudioList {
     const val imageEndPoint = "https://media-prod.jigrr.com/images/crop/"
     const val musicEndPoint = "https://media-prod.jigrr.com/documents/crop/"
 
-    fun getMusicList(): ArrayList<AudioItemModel> {
-        val newList = arrayListOf<AudioItemModel>()
-        musicList.forEach { musicItem ->
-            newList.add(musicItem.copy())
+    data class MusicListResponse(
+        val musicList: ArrayList<AudioItemModel>,
+        val isLastPage: Boolean
+    )
+
+    fun getMusicList(
+        page: Int,
+        limit: Int,
+        keyword: String?
+    ): MusicListResponse {
+        val keywordLowercase = keyword?.lowercase() ?: ""
+        val filteredList = musicList.filter {
+            it.name.lowercase().contains(keywordLowercase)
+                    || it.author.contains(keywordLowercase)
         }
-        return newList
+        val newList = arrayListOf<AudioItemModel>()
+        val startIndex = (page - 1) * limit
+        val endIndex = minOf(startIndex + limit, filteredList.lastIndex)
+        for (inx in startIndex..endIndex) {
+            newList.add(filteredList[inx].copy())
+        }
+        return MusicListResponse(
+            musicList = newList,
+            isLastPage = page == 3
+        )
     }
 
     private val musicList = arrayListOf(
+        // index - 1
         AudioItemModel(
             index = "11",
             name = "Only Forward",
@@ -23,6 +43,7 @@ object DummyAudioList {
             author = "RomanSenykMusic",
         ),
 
+        // index - 2
         AudioItemModel(
             index = "2",
             name = "Summer Adventures",
@@ -31,6 +52,7 @@ object DummyAudioList {
             author = "SergePavkinMusic",
         ),
 
+        // index - 3
         AudioItemModel(
             index = "13",
             name = "Upbeat Acoustic",
@@ -39,6 +61,7 @@ object DummyAudioList {
             author = "Stockaudios",
         ),
 
+        // index - 4
         AudioItemModel(
             index = "15",
             name = "Sunshine Jaunt",
@@ -47,6 +70,7 @@ object DummyAudioList {
             author = "Top-Flow-Production",
         ),
 
+        // index - 5
         AudioItemModel(
             index = "19",
             name = "Dance Mood",
@@ -55,6 +79,7 @@ object DummyAudioList {
             author = "SoulProdMusic",
         ),
 
+        // index - 6
         AudioItemModel(
             index = "20",
             name = "Indian Trap",
@@ -63,6 +88,7 @@ object DummyAudioList {
             author = "RoyaltyFreeMusic",
         ),
 
+        // index - 7
         AudioItemModel(
             index = "21",
             name = "Calming In The Sun",
@@ -71,6 +97,7 @@ object DummyAudioList {
             author = "Alex_MakeMusic",
         ),
 
+        // index - 8
         AudioItemModel(
             index = "22",
             name = "Euphoric Electric Groove",
@@ -79,6 +106,7 @@ object DummyAudioList {
             author = "Top-Flow-Production",
         ),
 
+        // index - 9
         AudioItemModel(
             index = "31",
             name = "Summer Vibes",
@@ -87,6 +115,7 @@ object DummyAudioList {
             author = "Top-Flow-Production",
         ),
 
+        // index - 10
         AudioItemModel(
             index = "47",
             name = "Motivational Corporate - Short",
@@ -95,6 +124,7 @@ object DummyAudioList {
             author = "LiteSaturation",
         ),
 
+        // index - 11
         AudioItemModel(
             index = "50",
             name = "Dreamer",
@@ -103,6 +133,7 @@ object DummyAudioList {
             author = "Alan Walker",
         ),
 
+        // index - 12
         AudioItemModel(
             index = "52",
             name = "Fata Morgana",
@@ -111,6 +142,7 @@ object DummyAudioList {
             author = "Lennart Schroot",
         ),
 
+        // index - 13
         AudioItemModel(
             index = "3",
             name = "Happy Day",
@@ -119,6 +151,7 @@ object DummyAudioList {
             author = "Stockaudios",
         ),
 
+        // index - 14
         AudioItemModel(
             index = "5",
             name = "Spring Upbeat",
@@ -127,6 +160,7 @@ object DummyAudioList {
             author = "lemonmusicstudio",
         ),
 
+        // index - 15
         AudioItemModel(
             index = "7",
             name = "Good Vibe",
@@ -135,6 +169,6 @@ object DummyAudioList {
             author = "Twisterium",
         ),
 
-    )
+        )
 
 }

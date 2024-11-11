@@ -7,14 +7,22 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
+import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.commitNow
+import androidx.lifecycle.lifecycleScope
 import com.example.backgroundaudio.R
+import com.example.backgroundaudio.audioList.SharedAudioViewModel
 import com.example.backgroundaudio.audioList.fragment.child.AudioListFragment
 import com.example.backgroundaudio.databinding.FragmentAudioListParentBinding
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class AudioListParentFragment : Fragment() {
@@ -30,9 +38,11 @@ class AudioListParentFragment : Fragment() {
     private val binding: FragmentAudioListParentBinding
         get() = requireNotNull(_binding)
 
-    private var tabsAdapter: AudioTabsAdapter? = null
+    private val sharedAudioViewModel: SharedAudioViewModel by activityViewModels()
 
+    private var tabsAdapter: AudioTabsAdapter? = null
     private var listener: SelectAudioCallbackListener? = null
+    private val searchQueryFlow = MutableSharedFlow<String>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -45,11 +55,30 @@ class AudioListParentFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        setupViews()
+        setObservers()
+    }
+
+    private fun setupViews() {
         with(binding) {
             setupToolbar()
             setupViewPager()
             icDone.setOnClickListener {
                 listener?.onAudioSelected()
+            }
+
+            searchEditText.doOnTextChanged { text, start, before, count ->
+                lifecycleScope.launch {
+                    searchQueryFlow.emit(text.toString())
+                }
+            }
+        }
+    }
+
+    private fun setObservers() {
+        lifecycleScope.launch {
+            searchQueryFlow.debounce(1000L).collectLatest { searchQuery ->
+                sharedAudioViewModel.updateSearchQuery(searchQuery)
             }
         }
     }

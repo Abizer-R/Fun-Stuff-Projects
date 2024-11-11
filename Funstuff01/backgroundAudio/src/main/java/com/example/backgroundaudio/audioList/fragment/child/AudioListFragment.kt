@@ -1,13 +1,9 @@
 package com.example.backgroundaudio.audioList.fragment.child
 
-import android.app.Activity
-import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -21,7 +17,6 @@ import com.example.backgroundaudio.audioList.adapter.AudioAdapter.Companion.UPDA
 import com.example.backgroundaudio.audioList.adapter.AudioItemModel
 import com.example.backgroundaudio.databinding.FragmentAudioListBinding
 import com.example.backgroundaudio.utils.AudioListNotifier
-import com.example.backgroundaudio.utils.AudioProcessorUtils
 import com.example.backgroundaudio.utils.smoothSnapToStart
 import com.example.backgroundaudio.utils.toast
 import com.google.android.exoplayer2.PlaybackException
@@ -146,6 +141,15 @@ class AudioListFragment: Fragment(),
                 }
             }
         }
+
+        sharedAudioViewModel.searchQueryLiveData.observe(viewLifecycleOwner) { searchQuery ->
+            handleSearchQuery(searchQuery)
+        }
+    }
+
+    private fun handleSearchQuery(searchQuery: String?) {
+        viewModel.updateSearchQuery(searchQuery)
+        viewModel.fetchAudioList()
     }
 
     override fun onUploadFromStorage() {}

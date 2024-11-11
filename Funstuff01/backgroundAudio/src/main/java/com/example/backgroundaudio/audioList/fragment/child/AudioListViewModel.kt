@@ -10,10 +10,12 @@ import com.example.backgroundaudio.audioList.adapter.AudioItemModel
 import com.example.backgroundaudio.utils.AudioListNotifier
 import com.example.backgroundaudio.utils.DummyAudioList
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.ObsoleteCoroutinesApi
 import kotlinx.coroutines.channels.BroadcastChannel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.launch
+import java.util.concurrent.atomic.AtomicBoolean
 import javax.inject.Inject
 
 @OptIn(ObsoleteCoroutinesApi::class)
@@ -35,12 +37,47 @@ class AudioListViewModel
 
     var initiallySelectedAudioItem: AudioItemModel? = null
 
-    fun fetchAudioList() = viewModelScope.launch {
-        val newList = DummyAudioList.getMusicList()
-        _audioList.addAll(newList)
-        updateInitiallySelectedItem()
-        _audioListNotifier.send(AudioListNotifier.NotifyDataChanged)
+    private var audioListApiJob: Job? = null
+
+    private var pageCount = 1
+    private val pageSize = 5
+    val isLastPage = AtomicBoolean(false)
+    val isLoading = AtomicBoolean(false)
+    private var searchQuery: String? = null
+
+    fun updateSearchQuery(searchQuery: String?) {
+        this.searchQuery = searchQuery
+        pageCount = 1
+        isLastPage.set(false)
     }
+
+    fun fetchAudioList(
+        searchQuery: String? = this.searchQuery
+    ) {
+        audioListApiJob?.cancel()
+        audioListApiJob = viewModelScope.launch {
+
+            if (pageCount == 1) {
+                _audioList.clear()
+                _audioListNotifier.send(
+                    AudioListNotifier.NotifyDataChanged
+                )
+            }
+
+
+            val response = DummyAudioList.getMusicList(
+                page = pageCount,
+                limit = pageSize,
+                keyword = searchQuery
+            )
+            _audioList.addAll(response.musicList)
+            pageCount++
+            isLastPage.set(response.isLastPage)
+            updateInitiallySelectedItem()
+            _audioListNotifier.send(AudioListNotifier.NotifyDataChanged)
+        }
+    }
+
 
     private fun updateInitiallySelectedItem() {
         val initiallySelectedItemIdx =
@@ -55,6 +92,7 @@ class AudioListViewModel
     fun resetItems() = viewModelScope.launch {
         _audioList.clear()
         currentPlaying = -1
+        pageCount = 1
         _audioListNotifier.send(
             AudioListNotifier.NotifyDataChanged
         )
