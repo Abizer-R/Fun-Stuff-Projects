@@ -5,8 +5,8 @@
     <color name="colorAccent">#4DC662</color>
     <color name="color_selected">#57735d</color>
 
-    <color name="backgroundColor">#171717</color>
-    <color name="colorOnBackground">#FFFFFF</color>
+    <color name="backgroundColor">#FFFFFF</color>
+    <color name="colorOnBackground">#171717</color>
 
     <color name="black">#000000</color>
     <color name="white">#FFFFFF</color>
@@ -16,5 +16,7 @@
     <color name="transparent">#00000000</color>
 
     <color name="grey300">#ffe0e0e0</color>
+    <color name="grey400">#B6B6B6</color>
+    <color name="grey500">#ff9e9e9e</color>
 
 </resources>

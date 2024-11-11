@@ -13,6 +13,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.example.backgroundaudio.R
 import com.example.backgroundaudio.databinding.AudioListItemBinding
 import com.example.backgroundaudio.databinding.UploadFromStorageListItemBinding
+import java.util.concurrent.TimeUnit
 
 class AudioAdapter(
     private val listener: AudioClickListener
@@ -45,7 +46,9 @@ class AudioAdapter(
         fun bind(audioItem: AudioItemModel) {
             with(binding) {
                 // Define initial State of all components to avoid inconsistencies
-                audioTitle.text = audioItem.name
+                tvAudioTitle.text = audioItem.name
+                tvAuthorName.text = audioItem.author
+                tvAudioDuration.text = millisecondToTime(audioItem.durationInMillis)
                 Glide.with(audioIcon.context)
                     .load(audioItem.icon)
                     .placeholder(R.drawable.ic_music_card)
@@ -77,12 +80,12 @@ class AudioAdapter(
 
         private fun updatePlayPause(audioItem: AudioItemModel) {
             if(audioItem.isPlayingCurrently) {
-                binding.imgPlayPause.setImageResource(R.drawable.ic_pause_white_36dp)
+                binding.imgPlayPause.setImageResource(R.drawable.ic_pause_circle_outline)
                 binding.audioIcon.isVisible = false
                 binding.lottiePlayingAnim.isVisible = true
                 binding.lottiePlayingAnim.playAnimation()
             } else {
-                binding.imgPlayPause.setImageResource(R.drawable.ic_play_arrow_white_36dp)
+                binding.imgPlayPause.setImageResource(R.drawable.ic_play_circle_outline)
                 binding.audioIcon.isVisible = true
                 binding.lottiePlayingAnim.isVisible = false
                 binding.lottiePlayingAnim.pauseAnimation()
@@ -96,9 +99,9 @@ class AudioAdapter(
 
         private fun updateSelectedState(audioItem: AudioItemModel) {
             with (binding.cvRoot) {
-                setBackgroundColor(
+                setCardBackgroundColor(
                     context.getColor(
-                        if (audioItem.isSelected) R.color.color_selected else R.color.dark_panel
+                        if (audioItem.isSelected) R.color.color_selected else R.color.transparent
                     )
                 )
                 strokeWidth = if (audioItem.isSelected) 2 else 0
@@ -125,6 +128,17 @@ class AudioAdapter(
                     }
                 }
             }
+        }
+
+        private fun millisecondToTime(millis: Long): String {
+            if (millis <= 0) {
+                return "NA"
+            }
+            return String.format(
+                "%02d:%02d",
+                TimeUnit.MILLISECONDS.toMinutes(millis) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(millis)),
+                TimeUnit.MILLISECONDS.toSeconds(millis) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis))
+            )
         }
     }
 
@@ -153,9 +167,9 @@ class AudioAdapter(
                 handleAudioNotSelected()
             }
             with (binding.cvRoot) {
-                setBackgroundColor(
+                setCardBackgroundColor(
                     context.getColor(
-                        if (audioItem.isSelected) R.color.color_selected else R.color.dark_panel
+                        if (audioItem.isSelected) R.color.color_selected else R.color.transparent
                     )
                 )
                 strokeWidth = if (audioItem.isSelected) 2 else 0
@@ -201,7 +215,7 @@ class AudioAdapter(
                 binding.lottiePlayingAnim.isVisible = true
                 binding.lottiePlayingAnim.playAnimation()
             } else {
-                binding.imgPlayPause.setImageResource(R.drawable.ic_play_arrow_white_36dp)
+                binding.imgPlayPause.setImageResource(R.drawable.ic_play_circle_outline)
                 binding.audioIcon.isVisible = true
                 binding.lottiePlayingAnim.isVisible = false
                 binding.lottiePlayingAnim.pauseAnimation()

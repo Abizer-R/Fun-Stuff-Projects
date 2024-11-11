@@ -11,6 +11,7 @@ data class AudioItemModel(
     var name: String,
     val url: String,
     val icon: String,
+    val durationInMillis: Long = 0,
     var storageUri: Uri? = null,
     val itemType: AudioItemType = AudioItemType.AUDIO_FILE,
     var isPlayingCurrently: Boolean = false,

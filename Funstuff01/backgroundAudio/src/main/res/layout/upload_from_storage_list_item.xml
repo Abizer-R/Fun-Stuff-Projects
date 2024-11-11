@@ -112,14 +112,14 @@
                 android:id="@+id/imgPlayPause"
                 android:layout_width="@dimen/_32sdp"
                 android:layout_height="@dimen/_32sdp"
-                android:background="@color/black"
+                android:background="@color/backgroundColor"
                 app:contentPadding="@dimen/_4sdp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:shapeAppearanceOverlay="@style/RoundedShape"
                 app:srcCompat="@drawable/ic_play_arrow_white_36dp"
-                app:tint="@color/white" />
+                app:tint="@color/colorOnBackground" />
 
             <ProgressBar
                 android:id="@+id/progressBar"
@@ -128,11 +128,11 @@
                 android:visibility="gone"
                 android:layout_marginEnd="@dimen/_4sdp"
                 android:indeterminate="true"
-                android:indeterminateTint="@color/white"
+                android:indeterminateTint="@color/colorOnBackground"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:tint="@color/white" />
+                app:tint="@color/colorOnBackground" />
 
 
 
