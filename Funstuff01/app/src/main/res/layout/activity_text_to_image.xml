@@ -97,26 +97,19 @@
                 app:layout_constraintEnd_toStartOf="@+id/btnPost"
                 app:layout_constraintTop_toTopOf="@+id/btnPost"
                 app:layout_constraintDimensionRatio="1:1"
-                android:layout_marginEnd="@dimen/_8sdp">
+                android:layout_marginEnd="@dimen/_8sdp"
+                app:strokeWidth="0dp">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent" >
-
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:background="@color/dark_panel"
-                        android:alpha="0.95"/>
 
 
                     <androidx.appcompat.widget.AppCompatImageView
                         android:id="@+id/musicIcon"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        app:srcCompat="@drawable/ic_musical_note"
-                        app:tint="@color/colorAccent"
-                        android:padding="@dimen/_10sdp"
+                        app:srcCompat="@drawable/ic_music_new"
                         android:layout_marginEnd="@dimen/_2sdp"/>
 
 
@@ -128,8 +121,6 @@
                         android:visibility="gone"
                         app:tint="@color/colorAccent"
                         app:layout_constraintDimensionRatio="1:1"
-                        android:background="@color/dark_panel"
-                        app:shapeAppearance="@style/RoundedImageViewShape"
                         app:layout_constraintTop_toTopOf="@id/musicIcon"
                         app:layout_constraintEnd_toEndOf="@id/musicIcon"
                         app:layout_constraintStart_toStartOf="@id/guidelineHalf" />

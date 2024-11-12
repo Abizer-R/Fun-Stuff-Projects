@@ -31,7 +31,6 @@
                 android:id="@+id/cvCover"
                 android:layout_width="@dimen/_36sdp"
                 android:layout_height="@dimen/_36sdp"
-                android:backgroundTint="@color/backgroundColor"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:strokeWidth="0dp">
@@ -41,7 +40,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_gravity="center"
-                    android:src="@drawable/ic_music_card"/>
+                    android:src="@drawable/ic_music_new"/>
 
                 <com.airbnb.lottie.LottieAnimationView
                     android:id="@+id/lottiePlayingAnim"

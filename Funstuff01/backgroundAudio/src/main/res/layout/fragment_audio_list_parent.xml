@@ -76,7 +76,7 @@
             android:layout_height="wrap_content"
             android:background="@color/transparent"
             app:tabTextColor="@color/grey400"
-            app:tabIndicatorColor="@color/colorOnBackground"
+            app:tabIndicatorColor="@color/colorAccent"
             app:tabSelectedTextColor="@color/colorAccent"
             app:tabIndicatorHeight="@dimen/_2sdp"
             app:layout_constraintTop_toTopOf="parent"

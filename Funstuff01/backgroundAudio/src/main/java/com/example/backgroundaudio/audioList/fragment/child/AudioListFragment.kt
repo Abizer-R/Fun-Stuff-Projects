@@ -238,7 +238,7 @@ class AudioListFragment: Fragment(),
             unSelectItem()
         } else {
             MaterialAlertDialogBuilder(requireContext(), R.style.AlertDialogTheme).apply {
-                setIcon(R.drawable.ic_music_card)
+                setIcon(R.drawable.ic_music_new)
                 setTitle(audioItem.name)
                 setMessage(getString(R.string.select_audio_as_background))
                 setCancelable(true)

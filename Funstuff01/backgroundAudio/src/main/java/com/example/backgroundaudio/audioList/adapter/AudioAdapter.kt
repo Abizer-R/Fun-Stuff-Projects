@@ -60,8 +60,8 @@ class AudioAdapter(
                 tvAudioDuration.text = millisecondToTime(audioItem.durationInMillis)
                 Glide.with(audioIcon.context)
                     .load(audioItem.icon)
-                    .placeholder(R.drawable.ic_music_card)
-                    .error(R.drawable.ic_music_card)
+                    .placeholder(R.drawable.ic_music_new)
+                    .error(R.drawable.ic_music_new)
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .into(audioIcon)
 
