@@ -31,6 +31,7 @@
                 android:id="@+id/cvCover"
                 android:layout_width="@dimen/_36sdp"
                 android:layout_height="@dimen/_36sdp"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:strokeWidth="0dp">
@@ -40,13 +41,13 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_gravity="center"
-                    android:src="@drawable/ic_music_new"/>
+                    android:src="@drawable/ic_music_new" />
 
                 <com.airbnb.lottie.LottieAnimationView
                     android:id="@+id/lottiePlayingAnim"
-                    android:visibility="gone"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:visibility="gone"
                     app:lottie_cacheComposition="true" />
 
             </com.google.android.material.card.MaterialCardView>
@@ -61,18 +62,24 @@
                 android:textSize="@dimen/_12ssp"
                 android:textColor="@color/colorOnBackground"
                 android:textStyle="bold"
+                app:layout_constraintBottom_toTopOf="@+id/linearLayoutCompat2"
                 app:layout_constraintEnd_toStartOf="@+id/imgPlayPause"
+                app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toEndOf="@+id/cvCover"
-                app:layout_constraintTop_toTopOf="@+id/cvCover"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_chainStyle="packed"
                 tools:text="Audio Name" />
 
             <androidx.appcompat.widget.LinearLayoutCompat
+                android:id="@+id/linearLayoutCompat2"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                app:layout_constraintStart_toEndOf="@+id/cvCover"
-                app:layout_constraintTop_toBottomOf="@id/tvAudioTitle"
+                android:layout_marginHorizontal="@dimen/_8sdp"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/imgPlayPause"
-                android:layout_marginHorizontal="@dimen/_8sdp">
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/cvCover"
+                app:layout_constraintTop_toBottomOf="@+id/tvAudioTitle">
 
                 <TextView
                     android:id="@+id/tvAuthorName"
@@ -88,9 +95,9 @@
                     android:id="@+id/tvHyphon"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:text=" - "
                     android:textColor="@color/grey400"
-                    android:textSize="@dimen/_12ssp"
-                    android:text=" - " />
+                    android:textSize="@dimen/_12ssp" />
 
                 <TextView
                     android:id="@+id/tvAudioDuration"
@@ -117,10 +124,10 @@
                 android:id="@+id/progressBar"
                 android:layout_width="32dp"
                 android:layout_height="32dp"
-                android:visibility="gone"
                 android:layout_marginEnd="@dimen/_4sdp"
                 android:indeterminate="true"
                 android:indeterminateTint="@color/colorOnBackground"
+                android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
