@@ -179,7 +179,7 @@ object AudioProcessorUtils {
 
     }
 
-    fun getAudioName(
+    fun getAudioNameWithExtension(
         uri: Uri,
         contentResolver: ContentResolver
     ): String {

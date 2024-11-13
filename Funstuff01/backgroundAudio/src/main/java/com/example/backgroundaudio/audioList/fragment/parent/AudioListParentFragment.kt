@@ -14,8 +14,10 @@ import androidx.fragment.app.commitNow
 import androidx.lifecycle.lifecycleScope
 import com.example.backgroundaudio.R
 import com.example.backgroundaudio.audioList.SharedAudioViewModel
+import com.example.backgroundaudio.audioList.bottomsheet.SelectAudioBottomSheet
 import com.example.backgroundaudio.audioList.fragment.child.AudioListFragment
 import com.example.backgroundaudio.databinding.FragmentAudioListParentBinding
+import com.example.backgroundaudio.uploadAudio.bottomsheet.PickAudioFileBottomSheet
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import dagger.hilt.android.AndroidEntryPoint
@@ -67,6 +69,10 @@ class AudioListParentFragment : Fragment() {
                 listener?.onAudioSelected()
             }
 
+            icUploadMusic.setOnClickListener {
+                showPickAudioBS()
+            }
+
             searchEditText.doOnTextChanged { text, start, before, count ->
                 lifecycleScope.launch {
                     searchQueryFlow.emit(text.toString())
@@ -113,6 +119,14 @@ class AudioListParentFragment : Fragment() {
             }
             tab.text = tabName
         }.attach()
+    }
+
+    private fun showPickAudioBS() {
+        val pickAudioBottomSheet = PickAudioFileBottomSheet.newInstance()
+        pickAudioBottomSheet.show(
+            childFragmentManager,
+            SelectAudioBottomSheet::class.java.simpleName
+        )
     }
 
     override fun onAttach(context: Context) {

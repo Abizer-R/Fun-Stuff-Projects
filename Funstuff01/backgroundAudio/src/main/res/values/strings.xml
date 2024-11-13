@@ -18,4 +18,14 @@
     <string name="your_music">Your Music</string>
     <string name="search">Search</string>
     <string name="retry">Retry</string>
+    <string name="upload_music">Upload Music</string>
+    <string name="upload_music_cover_below_optional">Select music cover image below (Optional)</string>
+    <string name="browse_music_file">Browse the music file you wish to upload.</string>
+    <string name="selected_music_file_is_shown_below">Your selected music file is displayed below</string>
+    <string name="enter_music_title">Enter Music Title</string>
+    <string name="music_title">Music Title</string>
+    <string name="music_cover">Music Cover</string>
+    <string name="add_music_cover">Add Music Cover</string>
+    <string name="no_audio_selected">No audio file selected</string>
+    <string name="error_while_processing_file">Error encountered in processing file</string>
 </resources>
