@@ -14,6 +14,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.example.backgroundaudio.R
 import com.example.backgroundaudio.databinding.AudioListItemBinding
 import com.example.backgroundaudio.databinding.UploadFromStorageListItemBinding
+import com.example.backgroundaudio.utils.AudioProcessorUtils.millisecondToTime
 import java.util.concurrent.TimeUnit
 
 class AudioAdapter(
@@ -139,16 +140,6 @@ class AudioAdapter(
             }
         }
 
-        private fun millisecondToTime(millis: Long): String {
-            if (millis <= 0) {
-                return "NA"
-            }
-            return String.format(
-                "%02d:%02d",
-                TimeUnit.MILLISECONDS.toMinutes(millis) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(millis)),
-                TimeUnit.MILLISECONDS.toSeconds(millis) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis))
-            )
-        }
     }
 
     inner class UploadFromStorageViewHolder(private val binding: UploadFromStorageListItemBinding) : RecyclerView.ViewHolder(binding.root) {

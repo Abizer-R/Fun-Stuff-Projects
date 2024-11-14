@@ -17,7 +17,9 @@ import com.example.backgroundaudio.audioList.SharedAudioViewModel
 import com.example.backgroundaudio.audioList.bottomsheet.SelectAudioBottomSheet
 import com.example.backgroundaudio.audioList.fragment.child.AudioListFragment
 import com.example.backgroundaudio.databinding.FragmentAudioListParentBinding
+import com.example.backgroundaudio.uploadAudio.activity.UploadAudioActivity
 import com.example.backgroundaudio.uploadAudio.bottomsheet.PickAudioFileBottomSheet
+import com.example.backgroundaudio.uploadAudio.fragment.PickAudioFragment
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import dagger.hilt.android.AndroidEntryPoint
@@ -27,7 +29,9 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class AudioListParentFragment : Fragment() {
+class AudioListParentFragment : Fragment(),
+    PickAudioFragment.PickAudioFragmentCallback
+{
 
     companion object {
 
@@ -129,6 +133,10 @@ class AudioListParentFragment : Fragment() {
         )
     }
 
+    override fun onAudioFileSelected(audioPath: String, audioName: String) {
+        listener?.onAudioFileSelected(audioPath, audioName)
+    }
+
     override fun onAttach(context: Context) {
         super.onAttach(context)
         val parentFragment = parentFragment
@@ -147,5 +155,6 @@ class AudioListParentFragment : Fragment() {
 
     interface SelectAudioCallbackListener {
         fun onAudioSelected()
+        fun onAudioFileSelected(audioPath: String, audioName: String)
     }
 }

@@ -10,10 +10,13 @@
 
     <color name="black">#000000</color>
     <color name="white">#FFFFFF</color>
+    <color name="red">#F44336</color>
+    <color name="blue">#00e1e7</color>
 
     <color name="dark_panel">#232323</color>
     <color name="message_text_color">#696969</color>
     <color name="transparent">#00000000</color>
+
 
     <color name="grey50">#2B2B2B</color>
     <color name="grey150">#202020</color>

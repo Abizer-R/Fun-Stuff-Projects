@@ -11,6 +11,7 @@ import androidx.fragment.app.commitNow
 import com.example.backgroundaudio.audioList.fragment.parent.AudioListParentFragment
 import com.example.backgroundaudio.audioList.fragment.parent.AudioListParentFragment.SelectAudioCallbackListener
 import com.example.backgroundaudio.databinding.BottomSheetSelectAudioBinding
+import com.example.backgroundaudio.uploadAudio.activity.UploadAudioActivity
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
@@ -78,6 +79,15 @@ class SelectAudioBottomSheet : BottomSheetDialogFragment(),
 
     override fun onAudioSelected() {
         listener?.onAudioSelected()
+        dismissAllowingStateLoss()
+    }
+
+    override fun onAudioFileSelected(audioPath: String, audioName: String) {
+        UploadAudioActivity.startActivity(
+            context = requireContext(),
+            audioFilePath = audioPath,
+            audioFileName = audioName
+        )
         dismissAllowingStateLoss()
     }
 

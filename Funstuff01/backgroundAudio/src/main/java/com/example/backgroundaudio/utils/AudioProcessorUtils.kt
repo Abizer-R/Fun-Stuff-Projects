@@ -15,6 +15,8 @@ import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.MediaMetadata
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.io.File
+import java.util.concurrent.TimeUnit
 
 
 object AudioProcessorUtils {
@@ -230,5 +232,16 @@ object AudioProcessorUtils {
             e.printStackTrace()
         }
         return 0
+    }
+
+    fun millisecondToTime(millis: Long): String {
+        if (millis <= 0) {
+            return "NA"
+        }
+        return String.format(
+            "%02d:%02d",
+            TimeUnit.MILLISECONDS.toMinutes(millis) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(millis)),
+            TimeUnit.MILLISECONDS.toSeconds(millis) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis))
+        )
     }
 }

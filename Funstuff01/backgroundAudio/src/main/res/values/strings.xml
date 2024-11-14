@@ -28,4 +28,7 @@
     <string name="add_music_cover">Add Music Cover</string>
     <string name="no_audio_selected">No audio file selected</string>
     <string name="error_while_processing_file">Error encountered in processing file</string>
+    <string name="close">Close</string>
+    <string name="audio_file_not_found">Audio file not found</string>
+    <string name="failed_to_play_audio">Failed to play audio</string>
 </resources>
