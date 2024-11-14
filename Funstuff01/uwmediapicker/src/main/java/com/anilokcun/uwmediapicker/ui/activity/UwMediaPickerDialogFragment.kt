@@ -139,7 +139,7 @@ internal class UwMediaPickerDialogFragment : DialogFragment() {
 		setListeners()
 	}
 	
-	override fun getTheme() = R.style.Theme_AppCompat_Light_NoActionBar
+	override fun getTheme() = androidx.appcompat.R.style.Theme_AppCompat_Light_NoActionBar
 	
 	/** Adds Listeners to UI elements */
 	private fun setListeners() {

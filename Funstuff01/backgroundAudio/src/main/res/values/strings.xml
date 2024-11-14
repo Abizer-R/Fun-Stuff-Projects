@@ -28,7 +28,11 @@
     <string name="add_music_cover">Add Music Cover</string>
     <string name="no_audio_selected">No audio file selected</string>
     <string name="error_while_processing_file">Error encountered in processing file</string>
+    <string name="error_while_processing_image">Error encountered in processing image</string>
+    <string name="error_in_selected_image">Error in selected image</string>
     <string name="close">Close</string>
     <string name="audio_file_not_found">Audio file not found</string>
     <string name="failed_to_play_audio">Failed to play audio</string>
+    <string name="gallery_permission_is_needed_for_this_action">Gallery permission is needed for this action</string>
+    <string name="could_not_find_cropped_image_file">Could not find cropped image file</string>
 </resources>

@@ -7,20 +7,31 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import com.airbnb.lottie.LottieDrawable
 import com.airbnb.lottie.RenderMode
+import com.anilokcun.uwmediapicker.UwMediaPicker
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.canhub.cropper.CropImageContract
+import com.canhub.cropper.CropImageContractOptions
 import com.example.backgroundaudio.R
 import com.example.backgroundaudio.audioList.adapter.AudioItemModel
 import com.example.backgroundaudio.databinding.FragmentUploadAudioBinding
+import com.example.backgroundaudio.utils.AudioPermissionUtils
+import com.example.backgroundaudio.utils.AudioPermissionUtils.GalleryAccessLevel
 import com.example.backgroundaudio.utils.AudioProcessorUtils
 import com.example.backgroundaudio.utils.AudioProcessorUtils.millisecondToTime
+import com.example.backgroundaudio.utils.toast
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.PlaybackException
@@ -53,6 +64,10 @@ class UploadAudioFragment : Fragment() {
 
     private var exoPlayerAudio: ExoPlayer? = null
     private var loadingDialog: AlertDialog? = null
+    private var coverImagePath: String = ""
+
+    private lateinit var galleryPermissionsLauncher: ActivityResultLauncher<Array<String>>
+    private lateinit var cropImage: ActivityResultLauncher<CropImageContractOptions>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -79,6 +94,7 @@ class UploadAudioFragment : Fragment() {
             showErrorLayout(getString(R.string.audio_file_not_found))
         } else {
             setupAudioExoPlayer(audioFilePath)
+            initLaunchers()
             setupViews(audioFilePath)
             setObservers()
         }
@@ -116,6 +132,37 @@ class UploadAudioFragment : Fragment() {
         })
     }
 
+    private fun initLaunchers() {
+        galleryPermissionsLauncher =
+            registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
+                val galleryAccessLevel = AudioPermissionUtils.getGalleryAccessLevel(requireContext())
+                when (galleryAccessLevel) {
+                    GalleryAccessLevel.PARTIAL_ACCESS,
+                    GalleryAccessLevel.FULL_ACCESS -> {
+                        openGallery()
+                    }
+                    GalleryAccessLevel.NO_ACCESS -> {
+                        context?.toast(getString(R.string.gallery_permission_is_needed_for_this_action))
+                    }
+                }
+            }
+
+        cropImage = registerForActivityResult(CropImageContract()) { result ->
+            when {
+                result.isSuccessful -> {
+                    val croppedImagePath = result.getUriFilePath(requireContext())
+                    handleCroppedImage(croppedImagePath)
+                }
+
+                result is com.canhub.cropper.CropImage.CancelledResult -> { }
+
+                else -> {
+                    toast(getString(R.string.something_went_wrong_msg))
+                }
+            }
+        }
+    }
+
     private fun setupViews(audioFilePath: String) {
         val audioLengthMillis = AudioProcessorUtils.getDurationMillis(
             context = requireContext(),
@@ -149,8 +196,17 @@ class UploadAudioFragment : Fragment() {
                 togglePlayPause()
             }
 
+            imgCustomCover.setOnClickListener {
+                galleryPermissionsLauncher.launch(AudioPermissionUtils.getGalleryPermissionsArray())
+            }
+
             etMusicTitle.doOnTextChanged { text, _, _, _ ->
                 tvAudioTitle.text = text
+            }
+
+            btnUpload.setOnClickListener {
+                // TODO: handle proper toasts for title-validation and thumbnail
+                context?.toast("button clicked")
             }
 
 
@@ -180,6 +236,66 @@ class UploadAudioFragment : Fragment() {
         binding.errorLayout.btnClose.setOnClickListener {
             activity?.onBackPressedDispatcher?.onBackPressed()
         }
+    }
+
+    private fun openGallery() {
+        UwMediaPicker
+            .with(this@UploadAudioFragment)
+            .setGalleryMode(UwMediaPicker.GalleryMode.ImageGallery)
+            .setGridColumnCount(3)
+            .setMaxSelectableMediaCount(1)
+            .setLightStatusBar(false)
+            .setCancelCallback { }
+            .launch { mediaList ->
+                if (mediaList.isNullOrEmpty()) {
+                    return@launch
+                }
+                handleSelectedImage(mediaList[0].mediaPath)
+            }
+    }
+
+    private fun handleSelectedImage(imagePath: String) {
+        if (imagePath.isBlank() || File(imagePath).exists().not()) {
+            context?.toast(getString(R.string.error_in_selected_image))
+            return
+        }
+        coverImagePath = imagePath
+        val imageFile = File(coverImagePath)
+        startImageCropper(imageUri = Uri.fromFile(imageFile))
+    }
+
+    private fun startImageCropper(imageUri: Uri) {
+        cropImage.launch(
+            CropImageContractOptions(
+                uri = imageUri,
+                cropImageOptions = com.canhub.cropper.CropImageOptions().apply {
+                    activityBackgroundColor =
+                        ContextCompat.getColor(requireContext(), R.color.backgroundColor)
+                    aspectRatioX = 1
+                    aspectRatioY = 1
+                    fixAspectRatio = true
+                },
+            ),
+        )
+    }
+
+    private fun handleCroppedImage(croppedImagePath: String?) {
+        if (croppedImagePath.isNullOrBlank() || File(croppedImagePath).exists().not()) {
+            context?.toast(getString(R.string.could_not_find_cropped_image_file))
+            return
+        }
+        coverImagePath = croppedImagePath
+        val croppedImageUri = Uri.fromFile(File(coverImagePath))
+        binding.imgCustomCover.setImageURI(croppedImageUri)
+        binding.audioIcon.setImageURI(croppedImageUri)
+        updateUploadButtonState()
+    }
+
+    private fun updateUploadButtonState() {
+        val shouldEnabled =
+            coverImagePath.isNotBlank() && coverImagePath.isNotEmpty()
+                    && binding.tvAudioTitle.text.isNotBlank()
+        binding.btnUpload.isEnabled = shouldEnabled
     }
 
     private fun showPlayingState() {

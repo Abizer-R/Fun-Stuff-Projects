@@ -45,7 +45,7 @@
                         android:id="@+id/tvUserName"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:textColor="@color/colorOnBackground"
+                        android:textColor="@color/text_color"
                         android:textSize="@dimen/_12ssp"
                         android:layout_marginHorizontal="@dimen/_8sdp"
                         app:layout_constraintBottom_toBottomOf="@id/imgProfilePic"
@@ -98,7 +98,7 @@
                         android:layout_marginHorizontal="@dimen/_8sdp"
                         android:ellipsize="end"
                         android:maxLines="2"
-                        android:textColor="@color/colorOnBackground"
+                        android:textColor="@color/text_color"
                         android:textSize="@dimen/_14ssp"
                         android:textStyle="bold"
                         app:layout_constraintBottom_toTopOf="@+id/linearLayoutCompat2"
@@ -126,7 +126,7 @@
                             android:layout_height="wrap_content"
                             android:ellipsize="end"
                             android:maxLines="1"
-                            android:textColor="@color/grey400"
+                            android:textColor="@color/text_color"
                             android:textSize="@dimen/_10ssp"
                             tools:text="Author Name" />
 
@@ -135,7 +135,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text=" - "
-                            android:textColor="@color/grey400"
+                            android:textColor="@color/text_color"
                             android:textSize="@dimen/_12ssp" />
 
                         <TextView
@@ -143,7 +143,7 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:textColor="@color/grey400"
+                            android:textColor="@color/text_color"
                             android:textSize="@dimen/_10ssp"
                             tools:text="0.38s" />
 
@@ -188,10 +188,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/music_title"
-                        android:textColor="@color/colorOnBackground"
-                        android:textSize="@dimen/_14ssp"
-                        app:layout_constraintStart_toStartOf="@+id/guideline_left"
-                        app:layout_constraintTop_toBottomOf="@+id/groupNewPin" />
+                        android:textColor="@color/text_color"
+                        android:textSize="@dimen/_14ssp" />
 
 
                     <com.google.android.material.textfield.TextInputLayout
@@ -217,11 +215,71 @@
                             android:maxLines="2"
                             android:textSize="@dimen/_12ssp"
                             android:textColor="@color/colorOnBackground"
-                            android:textColorHint="@color/grey450" />
+                            android:textColorHint="@color/grey400" />
 
                     </com.google.android.material.textfield.TextInputLayout>
 
                 </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/llMusicCover"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginTop="@dimen/_24sdp">
+
+                    <TextView
+                        android:id="@+id/tvLabelMusicCover"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/music_cover"
+                        android:textColor="@color/text_color"
+                        android:textSize="@dimen/_14ssp"
+                        app:layout_constraintTop_toTopOf="parent"/>
+
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/cvCustomCover"
+                        android:layout_width="@dimen/_108sdp"
+                        android:layout_height="@dimen/_108sdp"
+                        android:layout_marginTop="@dimen/_8sdp"
+                        app:layout_constraintDimensionRatio="1:1"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/tvLabelMusicCover"
+                        app:strokeWidth="0dp">
+
+                        <androidx.appcompat.widget.AppCompatImageView
+                            android:id="@+id/imgCustomCover"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_gravity="center"
+                            android:src="@drawable/ic_add_image" />
+
+                    </com.google.android.material.card.MaterialCardView>
+
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/btnUpload"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_24sdp"
+                    android:gravity="center"
+                    android:paddingVertical="@dimen/_6sdp"
+                    android:text="@string/upload_music"
+                    android:textSize="@dimen/_12ssp"
+                    android:textColor="@color/backgroundColor"
+                    android:textStyle="bold"
+                    android:background="@drawable/bg_curved_dark_15sdp"
+                    android:backgroundTint="@color/button_background_color"
+                    android:enabled="false"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/errorTitleTextView" />
 
 
             </androidx.appcompat.widget.LinearLayoutCompat>

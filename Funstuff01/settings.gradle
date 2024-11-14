@@ -16,3 +16,5 @@ dependencyResolutionManagement {
 rootProject.name = "Fun stuff 01"
 include ':app'
 include ':backgroundAudio'
+include ':cropper'
+include ':uwmediapicker'

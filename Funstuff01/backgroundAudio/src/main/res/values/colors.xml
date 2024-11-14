@@ -15,7 +15,9 @@
 
     <color name="dark_panel">#232323</color>
     <color name="message_text_color">#696969</color>
+    <color name="text_color">@color/grey300</color>
     <color name="transparent">#00000000</color>
+    <color name="disabledColor">#999999</color>
 
 
     <color name="grey50">#2B2B2B</color>

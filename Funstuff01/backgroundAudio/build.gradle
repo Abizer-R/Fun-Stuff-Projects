@@ -37,6 +37,9 @@ android {
 
 dependencies {
 
+    implementation project(path: ':cropper')
+    implementation project(path: ':uwmediapicker')
+
     constraints {
         implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.9.21") {
             because("kotlin-stdlib-jdk7 is now part of kotlin-stdlib")

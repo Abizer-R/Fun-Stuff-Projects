@@ -7,7 +7,6 @@ import android.util.Log
 import android.webkit.MimeTypeMap
 import android.widget.Toast
 import androidx.core.net.toUri
-import com.anilokcun.uwmediapicker.BuildConfig
 import java.io.BufferedInputStream
 import java.io.BufferedOutputStream
 import java.io.File
@@ -30,9 +29,7 @@ internal fun String.toUri(): Uri = Uri.parse("file://$this")
 
 /** Logs Error */
 internal fun String?.logError() {
-	if (BuildConfig.DEBUG) {
-		Log.e("UwMediaPicker", this.toString())
-	}
+	Log.e("UwMediaPicker", this.toString())
 }
 
 
