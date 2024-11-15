@@ -1,17 +1,15 @@
 package com.example.backgroundaudio.uploadAudio.fragment
 
-import android.content.Context
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
+import android.widget.EditText
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
@@ -25,13 +23,15 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.canhub.cropper.CropImageContract
 import com.canhub.cropper.CropImageContractOptions
 import com.example.backgroundaudio.R
-import com.example.backgroundaudio.audioList.adapter.AudioItemModel
 import com.example.backgroundaudio.databinding.FragmentUploadAudioBinding
 import com.example.backgroundaudio.utils.AudioPermissionUtils
 import com.example.backgroundaudio.utils.AudioPermissionUtils.GalleryAccessLevel
 import com.example.backgroundaudio.utils.AudioProcessorUtils
 import com.example.backgroundaudio.utils.AudioProcessorUtils.millisecondToTime
 import com.example.backgroundaudio.utils.toast
+import com.example.backgroundaudio.utils.uploadAudio.MusicTitleValidationState
+import com.example.backgroundaudio.utils.uploadAudio.MusicTitleValidator
+import com.example.backgroundaudio.utils.uploadAudio.getErrorStringResource
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.PlaybackException
@@ -201,12 +201,34 @@ class UploadAudioFragment : Fragment() {
             }
 
             etMusicTitle.doOnTextChanged { text, _, _, _ ->
-                tvAudioTitle.text = text
+                val titleString = (text ?: "").toString()
+                tvAudioTitle.text = titleString
+                val validationState = MusicTitleValidator.isValid(titleString)
+                if (validationState is MusicTitleValidationState.Invalid) {
+                    val errorResource = validationState.error.getErrorStringResource()
+                    etMusicTitle.error = getString(errorResource)
+                } else {
+                    etMusicTitle.error = null
+                }
+                updateUploadButtonState()
+            }
+
+            etMusicTitle.setOnFocusChangeListener { _, hasFocus ->
+                if (!hasFocus) {
+                    // Trim leading and trailing whitespace when focus is lost
+                    etMusicTitle.setText(etMusicTitle.text.toString().trim())
+                }
             }
 
             btnUpload.setOnClickListener {
-                // TODO: handle proper toasts for title-validation and thumbnail
-                context?.toast("button clicked")
+                handleUploadButtonClick()
+            }
+
+            llContainer.setOnTouchListener { v, event ->
+                if (v !is EditText) {
+                    etMusicTitle.clearFocus()
+                }
+                return@setOnTouchListener true
             }
 
 
@@ -292,10 +314,29 @@ class UploadAudioFragment : Fragment() {
     }
 
     private fun updateUploadButtonState() {
-        val shouldEnabled =
-            coverImagePath.isNotBlank() && coverImagePath.isNotEmpty()
-                    && binding.tvAudioTitle.text.isNotBlank()
-        binding.btnUpload.isEnabled = shouldEnabled
+        val shouldEnabled = shouldEnableUploadButton()
+        binding.btnUpload.backgroundTintList = ContextCompat.getColorStateList(
+            requireContext(),
+            if (shouldEnabled) R.color.colorAccent else R.color.disabledColor
+        )
+    }
+
+    private fun shouldEnableUploadButton(): Boolean {
+        val musicTitle = binding.tvAudioTitle.text.toString().trim()
+        val isMusicTitleValid = MusicTitleValidator.isValid(musicTitle) is MusicTitleValidationState.Valid
+        return coverImagePath.isNotBlank() && coverImagePath.isNotEmpty()
+                && isMusicTitleValid
+    }
+
+    private fun handleUploadButtonClick() {
+        binding.etMusicTitle.clearFocus()
+        val musicTitle = binding.tvAudioTitle.text.toString().trim()
+        val isMusicTitleValid = MusicTitleValidator.isValid(musicTitle) is MusicTitleValidationState.Valid
+        if (isMusicTitleValid.not()) {
+            context?.toast(getString(R.string.please_enter_valid_music_title))
+            return
+        }
+        context?.toast("ENABLED")
     }
 
     private fun showPlayingState() {
@@ -319,6 +360,10 @@ class UploadAudioFragment : Fragment() {
         } else {
             exoPlayerAudio?.play()
         }
+    }
+
+    private fun pausePlayer() = activity?.runOnUiThread {
+        exoPlayerAudio?.pause()
     }
 
     private fun releasePlayer() = activity?.runOnUiThread {
@@ -345,6 +390,11 @@ class UploadAudioFragment : Fragment() {
         super.onSaveInstanceState(outState)
         outState.putString(AUDIO_FILE_PATH, arguments?.getString(AUDIO_FILE_PATH))
         outState.putString(AUDIO_FILE_NAME, arguments?.getString(AUDIO_FILE_NAME))
+    }
+
+    override fun onPause() {
+        super.onPause()
+        pausePlayer()
     }
 
     override fun onDestroy() {

@@ -11,7 +11,7 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" >
+            android:layout_height="wrap_content">
 
             <androidx.appcompat.widget.LinearLayoutCompat
                 android:id="@+id/llContainer"
@@ -181,13 +181,15 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:layout_marginTop="@dimen/_24sdp">
+                    android:layout_marginTop="@dimen/_24sdp"
+                    android:focusableInTouchMode="true"
+                    android:focusable="true">
 
                     <TextView
                         android:id="@+id/tvLabelMusicTitle"
-                        android:layout_width="match_parent"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/music_title"
+                        android:text="@string/music_title_with_asterisk"
                         android:textColor="@color/text_color"
                         android:textSize="@dimen/_14ssp" />
 
@@ -233,7 +235,7 @@
                         android:id="@+id/tvLabelMusicCover"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/music_cover"
+                        android:text="@string/music_cover_with_asterisk"
                         android:textColor="@color/text_color"
                         android:textSize="@dimen/_14ssp"
                         app:layout_constraintTop_toTopOf="parent"/>
@@ -274,8 +276,7 @@
                     android:textColor="@color/backgroundColor"
                     android:textStyle="bold"
                     android:background="@drawable/bg_curved_dark_15sdp"
-                    android:backgroundTint="@color/button_background_color"
-                    android:enabled="false"
+                    android:backgroundTint="@color/disabledColor"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"

@@ -24,7 +24,9 @@
     <string name="selected_music_file_is_shown_below">Your selected music file is displayed below</string>
     <string name="enter_music_title">Enter Music Title</string>
     <string name="music_title">Music Title</string>
+    <string name="music_title_with_asterisk">Music Title <font color='#F44336'>*</font></string>
     <string name="music_cover">Music Cover</string>
+    <string name="music_cover_with_asterisk">Music Cover <font color='#F44336'>*</font></string>
     <string name="add_music_cover">Add Music Cover</string>
     <string name="no_audio_selected">No audio file selected</string>
     <string name="error_while_processing_file">Error encountered in processing file</string>
@@ -35,4 +37,8 @@
     <string name="failed_to_play_audio">Failed to play audio</string>
     <string name="gallery_permission_is_needed_for_this_action">Gallery permission is needed for this action</string>
     <string name="could_not_find_cropped_image_file">Could not find cropped image file</string>
+    <string name="invalid_music_title_instruction">Music title can only contain alphabets, numbers, underscore(_), hyphen(-) and dot(.)</string>
+    <string name="please_enter_valid_music_title">Please enter valid music title</string>
+    <string name="music_title_first_character_error">The first character can only be alphabet, number or underscore(_)</string>
+    <string name="music_title_length_error">Music title should be at least 6 characters long</string>
 </resources>

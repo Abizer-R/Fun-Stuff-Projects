@@ -11,6 +11,8 @@
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/app" />
             <option value="$PROJECT_DIR$/backgroundAudio" />
+            <option value="$PROJECT_DIR$/cropper" />
+            <option value="$PROJECT_DIR$/uwmediapicker" />
           </set>
         </option>
         <option name="resolveExternalAnnotations" value="false" />
