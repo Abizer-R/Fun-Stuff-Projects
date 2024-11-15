@@ -207,8 +207,7 @@ class UploadAudioFragment : Fragment() {
                 tvAudioTitle.text = titleString
                 val validationState = MusicTitleValidator.isValid(titleString)
                 if (validationState is MusicTitleValidationState.Invalid) {
-                    val errorResource = validationState.error.getErrorStringResource()
-                    etMusicTitle.error = getString(errorResource)
+                    etMusicTitle.error = getString(validationState.errorMsgResId)
                 } else {
                     etMusicTitle.error = null
                 }
@@ -340,8 +339,7 @@ class UploadAudioFragment : Fragment() {
         }
         val validationState = UploadMusicValidator.isValid(musicTitle, coverImagePath)
         if (validationState is UploadMusicValidationState.Invalid) {
-            val errorResource = validationState.error.getErrorStringResource()
-            toast(getString(errorResource))
+            toast(getString(validationState.errorMsgResId))
             return
         }
         // TODO: add uploading logic

@@ -31,7 +31,10 @@ object UploadMusicValidator {
 
 sealed class UploadMusicValidationState {
     object Valid: UploadMusicValidationState()
-    data class Invalid(val error: UploadMusicValidationError): UploadMusicValidationState()
+    data class Invalid(
+        val error: UploadMusicValidationError,
+        @StringRes val errorMsgResId: Int = error.getErrorStringResource(),
+    ): UploadMusicValidationState()
 }
 
 enum class UploadMusicValidationError {

@@ -34,7 +34,10 @@ object MusicTitleValidator {
 
 sealed class MusicTitleValidationState {
     object Valid: MusicTitleValidationState()
-    data class Invalid(val error: MusicTitleValidationError): MusicTitleValidationState()
+    data class Invalid(
+        val error: MusicTitleValidationError,
+        @StringRes val errorMsgResId: Int = error.getErrorStringResource(),
+    ): MusicTitleValidationState()
 }
 
 enum class MusicTitleValidationError {
@@ -48,6 +51,6 @@ fun MusicTitleValidationError.getErrorStringResource(): Int {
     return when (this) {
         INVALID_FIRST_CHARACTER -> R.string.music_title_first_character_error
         LESS_THAN_6_CHARACTERS -> R.string.music_title_length_error
-        MusicTitleValidationError.INVALID_CHARACTERS -> R.string.invalid_music_title_instruction
+        INVALID_CHARACTERS -> R.string.invalid_music_title_instruction
     }
 }
