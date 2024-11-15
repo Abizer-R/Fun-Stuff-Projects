@@ -8,16 +8,17 @@ import com.example.backgroundaudio.utils.uploadAudio.MusicTitleValidationError.L
 
 object MusicTitleValidator {
 
-    fun isValid(input: String): MusicTitleValidationState {
-        if (isFirstCharacterValid(input).not()) {
+    fun isValid(input: String?): MusicTitleValidationState {
+        val mInput = input ?: return MusicTitleValidationState.Invalid(LESS_THAN_6_CHARACTERS)
+        if (isFirstCharacterValid(mInput).not()) {
             return MusicTitleValidationState.Invalid(INVALID_FIRST_CHARACTER)
         }
-        if (input.length < 6) {
+        if (mInput.length < 6) {
             return MusicTitleValidationState.Invalid(LESS_THAN_6_CHARACTERS)
         }
 
         val regex = "^[a-zA-Z0-9._\\s-]+$".toRegex()
-        if (regex.matches(input)) {
+        if (regex.matches(mInput)) {
             return MusicTitleValidationState.Valid
         } else {
             return MusicTitleValidationState.Invalid(INVALID_CHARACTERS)

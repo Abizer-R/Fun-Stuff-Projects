@@ -31,6 +31,8 @@ import com.example.backgroundaudio.utils.AudioProcessorUtils.millisecondToTime
 import com.example.backgroundaudio.utils.toast
 import com.example.backgroundaudio.utils.uploadAudio.MusicTitleValidationState
 import com.example.backgroundaudio.utils.uploadAudio.MusicTitleValidator
+import com.example.backgroundaudio.utils.uploadAudio.UploadMusicValidationState
+import com.example.backgroundaudio.utils.uploadAudio.UploadMusicValidator
 import com.example.backgroundaudio.utils.uploadAudio.getErrorStringResource
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
@@ -336,7 +338,14 @@ class UploadAudioFragment : Fragment() {
             context?.toast(getString(R.string.please_enter_valid_music_title))
             return
         }
-        context?.toast("ENABLED")
+        val validationState = UploadMusicValidator.isValid(musicTitle, coverImagePath)
+        if (validationState is UploadMusicValidationState.Invalid) {
+            val errorResource = validationState.error.getErrorStringResource()
+            toast(getString(errorResource))
+            return
+        }
+        // TODO: add uploading logic
+        toast("Upload Music Allowed")
     }
 
     private fun showPlayingState() {

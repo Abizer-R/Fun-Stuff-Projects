@@ -41,4 +41,5 @@
     <string name="please_enter_valid_music_title">Please enter valid music title</string>
     <string name="music_title_first_character_error">The first character can only be alphabet, number or underscore(_)</string>
     <string name="music_title_length_error">Music title should be at least 6 characters long</string>
+    <string name="please_select_cover_image">Please select cover image</string>
 </resources>
